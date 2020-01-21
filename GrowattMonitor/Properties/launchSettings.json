@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "GrowattMonitor": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
