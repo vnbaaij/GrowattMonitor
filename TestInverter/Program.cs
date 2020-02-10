@@ -19,7 +19,7 @@ namespace GrowattMonitorShared
 
     public class Program
     {
-        private static string ipAddress = "192.168.1.108";
+        private static string ipAddress = "192.168.1.103";
 
         private static readonly byte[] PING = new byte[] {
                 0x00, 0xA8, 0x00, 0x05, 0x00, 0x0C, 0x01, 0x16, 0x0D, 0x22, 0x2C, 0x43, 0x58, 0x46, 0x46, 0x75, 0x45, 0x2E, 0x79, 0xC6
@@ -420,7 +420,7 @@ namespace GrowattMonitorShared
                         SendConfig();
                     }
                     break;
-                case MessageType.DATA:
+                case MessageType.CURRDATA:
                     if (msg.IsAck)
                     {
                         Console.WriteLine("==>");
@@ -496,7 +496,7 @@ namespace GrowattMonitorShared
             {
                 var msg = Message.CreateFromByteBuffer(buffer);
 
-               
+
                 SendMessage(msg);
                 Console.WriteLine($"Sent Config item details (0x{BitConverter.ToUInt16(msg.Body[10..12].ReverseWhenLittleEndian()):X2})");
             }

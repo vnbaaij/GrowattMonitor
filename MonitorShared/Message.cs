@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 using System.Text;
-//using Microsoft.Extensions.Logging;
 using MonitorUtils;
 
 namespace GrowattMonitorShared
 {
     public class Message
     {
+        private static readonly bool showBytesInDump = false;
+
         public byte[] Content { get; private set; }
 
         public byte[] Body { get; private set; }
@@ -29,19 +29,8 @@ namespace GrowattMonitorShared
             }
         }
 
-        //private byte[] _remaining;
         public byte[] Remaining { get; set; }
-        //    get
-        //    {
-        //        var rem = _remaining;
-        //        _remaining = null;
-        //        return rem;
-        //    }
-        //    set
-        //    {
-        //        _remaining = value;
-        //    }
-        //}
+
 
         public ushort Id { get; set; } = 1;
 
@@ -55,8 +44,6 @@ namespace GrowattMonitorShared
 
         public bool IsAck { get; private set; } = false;
         public bool InIdentifyProcess { get; private set; } = false;
-
-        private static readonly bool showBytesInDump = true;
 
         public static Message CreateFromByteBuffer(byte[] buffer)
         {
@@ -79,7 +66,7 @@ namespace GrowattMonitorShared
 
                 if (message.Version == 5)
                 {
-                    // In thus version include crc in size
+                    // In this version include crc in size
                     message.Size += 2;
                 }
 
@@ -171,8 +158,8 @@ namespace GrowattMonitorShared
                         return DecodeAnnounce();
                     break;
 
-                case MessageType.DATA:
-                case MessageType.DATA2:
+                case MessageType.CURRDATA:
+                case MessageType.HISTDATA:
                     if (Body[0] == 0 && Body.Length == 1)
                     {
                         IsAck = true;
@@ -180,20 +167,20 @@ namespace GrowattMonitorShared
                     }
                     else
                         return DecodeData();
-                    //break;
+                //break;
                 case MessageType.PING:
                     return DecodePing();
                 case MessageType.CONFIG:
                     if (Body[12] == 0 && Body.Length == 13)
                         IsAck = true;
                     return DecodeConfig();
-                    //break;
+                //break;
                 case MessageType.IDENTIFY:
                     break;
                 case MessageType.REBOOT:
                     break;
                 case MessageType.CONFACK:
-                   //return DecodeConfAck();
+                //return DecodeConfAck();
                 default:
                     Console.WriteLine($"Received unknown message type 0x{Type}");
                     break;
@@ -206,7 +193,7 @@ namespace GrowattMonitorShared
             Dictionary<string, object> result;
             if (Version == 5)
             {
-                //$data = unpack("C/Cinit/C6pre/a10datalogger/a10inverter/C57jib1/a10iinverteralias/C66jib2/a16make/a9version/C*jib3", $this->msg);
+                //data = C/Cinit/C6pre/a10datalogger/a10inverter/C57jib1/a10iinverteralias/C66jib2/a16make/a9version/C*jib3
                 result = new Dictionary<string, object>(6)
                 {
                     { "id", Id },
@@ -216,7 +203,8 @@ namespace GrowattMonitorShared
                     { "build", Content[57..62] },
                     { "blob2", Content[62..85] },
                     { "inverteralias", Content[85..96] },
-                    { "blob3", Content[96..161] },
+                    { "model", Content[95..99] },
+                    { "blob3", Content[99..161] },
                     { "make", Content[161..177] },
                     { "version", Content[177..186] },
                     { "blob4", Content[186..^0] },
@@ -224,7 +212,7 @@ namespace GrowattMonitorShared
             }
             else
             {
-                //$data = unpack("C/Cinit/C6pre/a10datalogger/a10ident/C58jib1/a10inverterserial/C62jib2/a20make/a8version/C*jib3", $this->msg);
+                //data = C/Cinit/C6pre/a10datalogger/a10ident/C58jib1/a10inverterserial/C62jib2/a20make/a8version/C*jib3
                 result = new Dictionary<string, object>(6)
                 {
                     { "id", Id },
@@ -243,7 +231,6 @@ namespace GrowattMonitorShared
 
         private Telegram DecodeData()
         {
-            //string software = Encoding.Default.GetString((byte[])Inverter.Config.FirstOrDefault(c => c.Name == "swversion")?.Value);
             return new Telegram(Content); //, software);
         }
 
@@ -265,7 +252,7 @@ namespace GrowattMonitorShared
             //data = C/Cinit/C6pre/a10serial/nconfigid/0
 
             var configid = "0x" + BitConverter.ToUInt16(Content[18..20].ReverseWhenLittleEndian()).ToString("X2");
-            
+
             if (!IsAck)
             {
                 ushort size = BitConverter.ToUInt16(Content[20..22].ReverseWhenLittleEndian());
@@ -349,15 +336,10 @@ namespace GrowattMonitorShared
 
             // Header = 8 bytes, CRC = 2 bytes, Msg length = # of bytes - header (includes CRC)
             int msgLength = Content.Length - 8;
-            //if (hasCrc)
-            //{
-                Console.WriteLine($"\nTimestamp: {DateTime.Now:yyyy-MM-dd HH:mm:ss}, Length: {msgLength} ({msgLength:X2}), CRC: {crc[0]:X2} {crc[1]:X2}");
-                Console.WriteLine($"Direction: {infoType}, Type: {Enum.GetName(typeof(MessageType), Type)} ");
-            //}
-            //else
-            //{
-            //    Console.WriteLine(infoType);
-            //}
+
+            Console.WriteLine($"\nTimestamp: {DateTime.Now:yyyy-MM-dd HH:mm:ss}, Length: {msgLength} ({msgLength:X2}), CRC: {crc[0]:X2} {crc[1]:X2}");
+            Console.WriteLine($"Direction: {infoType}, Type: {Enum.GetName(typeof(MessageType), Type)} ");
+
             if (showBytesInDump)
             {
                 Console.Write(lines.ToString());

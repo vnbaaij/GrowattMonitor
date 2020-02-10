@@ -15,8 +15,8 @@ namespace GrowattMonitorShared
 {
     public class InverterMonitor
     {
-        private static string inverterAddress = "192.168.1.108";
-        private static string serverAddress = "server.growatt.com";
+        private static readonly string inverterAddress = "192.168.1.103";
+        private static readonly string serverAddress = "server.growatt.com";
 
         private static MonitorState _state = MonitorState.WAITING;
         private static Socket _inverterSocket = null;
@@ -77,7 +77,7 @@ namespace GrowattMonitorShared
 
             try
             {
-                Console.Write($"\nWaiting to connect to '{host}'`... ");
+                Console.Write($"\nWaiting to connect to '{host}'... ");
                 if (socket == null)
                     socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -240,8 +240,8 @@ namespace GrowattMonitorShared
                 MessageType.PING => ProcessPing(msg, (Dictionary<string, object>)data),
                 MessageType.IDENTIFY => ProcessIdentify(msg),
                 MessageType.ANNOUNCE => ProcessAnnounce(msg, (Dictionary<string, object>)data),
-                MessageType.DATA => ProcessData(msg, (Telegram)data),
-                MessageType.DATA2 => ProcessData2(msg, (Telegram)data),
+                MessageType.CURRDATA => ProcessData(msg, (Telegram)data),
+                MessageType.HISTDATA => ProcessData(msg, (Telegram)data),
                 MessageType.CONFIG => ProcessConfig(msg, (Config)data),
                 MessageType.REBOOT => null,
                 //MessageType.CONFACK => //ProcessConfAck((List<Config>)data),
@@ -324,38 +324,61 @@ namespace GrowattMonitorShared
 
         private Message ProcessAnnounce(Message msg, Dictionary<string, object> data)
         {
-
-            if (bListenToInverter)
+            if (!msg.IsAck)
             {
+                if (bListenToInverter)
+                {
 
-                Console.WriteLine("==>");
-                Console.WriteLine($"Received announcement from '{Display(data["make"])}' - {Display(data["inverter"])} ({Display(data["inverteralias"])})");
-                Console.WriteLine($"Data logger: {Display(data["datalogger"])}");
-                Console.WriteLine($"Version: {Display(data["version"])}");
-                Console.WriteLine($"Build: {Display(data["build"])}");
+                    Console.WriteLine("==>");
+                    Console.WriteLine($"Received announcement from '{Display(data["make"])}' - {Display(data["inverter"])} ({Display(data["inverteralias"])})");
+                    Console.WriteLine($"Data logger: {Display(data["datalogger"])}");
+                    Console.WriteLine($"Version: {Display(data["version"])}");
+                    Console.WriteLine($"Build: {Display(data["build"])}");
 
-                //Console.WriteLine($"{Display(data["blob1"])}");
-                //Console.WriteLine($"{Display(data["blob2"])}");
-                //Console.WriteLine($"{Display(data["blob3"])}");
-                //Console.WriteLine($"{Display(data["blob4"])}");
-                //DumpBytes("IN", (byte[])data["blob1"], false);
-                //DumpBytes("IN", (byte[])data["blob2"], false);
-                //DumpBytes("IN", (byte[])data["blob3"], false);
-                //DumpBytes("IN", (byte[])data["blob4"], false);
+                    var result = BitConverter.ToString((byte[])data["model"]).Replace("-", "").ToCharArray();
+
+                    string model = "A" + result[0] +
+                                   "B" + result[1] +
+                                   "D" + result[2] +
+                                   "T" + result[3] +
+                                   "P" + result[4] +
+                                   "U" + result[5] +
+                                   "M" + result[6] +
+                                   "S" + result[7];
 
 
-                _version = msg.Version;
-                _state = MonitorState.ANNOUNCE_SENT;
-                
+
+                    Console.WriteLine($"Model {model}");
+
+                    //Console.WriteLine($"{Display(data["blob1"])}");
+                    //Console.WriteLine($"{Display(data["blob2"])}");
+                    //Console.WriteLine($"{Display(data["blob3"])}");
+                    //Console.WriteLine($"{Display(data["blob4"])}");
+                    //DumpBytes("IN", (byte[])data["blob1"], false);
+                    //DumpBytes("IN", (byte[])data["blob2"], false);
+                    //DumpBytes("IN", (byte[])data["blob3"], false);
+                    //DumpBytes("IN", (byte[])data["blob4"], false);
+
+
+                    _version = msg.Version;
+                    _state = MonitorState.ANNOUNCE_SENT;
+
+                }
+                else
+                {
+                    //Message reply = Message.Create(msg.Version, msg.Type, new byte[] { 0x00 }, (ushort)data["id"]);
+
+                    _version = msg.Version;
+                    _state = MonitorState.ANNOUNCE_RCVD;
+                    //return msg; //reply;
+                }
             }
             else
             {
-                //Message reply = Message.Create(msg.Version, msg.Type, new byte[] { 0x00 }, (ushort)data["id"]);
-
-                _version = msg.Version;
-                _state = MonitorState.ANNOUNCE_RCVD;
-                //return msg; //reply;
+                Console.WriteLine("==>");
+                Console.WriteLine($"ANNOUNCE ACK received");
             }
+
             Message reply = Message.Create(msg.Version, msg.Type, msg.Body, msg.Id);
             return reply;
         }
@@ -369,6 +392,7 @@ namespace GrowattMonitorShared
                 Console.WriteLine("==>");
                 Console.WriteLine($"Received data");
 
+                DumpTelegram(telegram);
                 //byte[] request = new byte[] { 0x00 };
 
                 //var reply = Message.Create(_version, msg.Type, request, msg.Id);
@@ -378,32 +402,6 @@ namespace GrowattMonitorShared
                 //$measurement->save();
             }
 
-            Message reply = Message.Create(msg.Version, msg.Type, msg.Body, msg.Id);
-            return reply;
-        }
-
-        private Message ProcessData2(Message msg, Telegram telegram)
-        {
-            _state = MonitorState.DATA_RCVD;
-
-            if (bListenToInverter)
-            {
-                Console.WriteLine("==>");
-                Console.WriteLine($"Received data 150");
-
-                //return msg;
-
-                //$measurement = new measurement(new repository\memory());
-                //$measurement->readFromTelegram($this->data);
-                //$measurement->save();
-            }
-            else
-            {
-                //byte[] request = new byte[] { 0x00 };
-
-                //var reply = Message.Create(_version, msg.Type, request, msg.Id);
-                //return reply;
-            }
             Message reply = Message.Create(msg.Version, msg.Type, msg.Body, msg.Id);
             return reply;
         }
@@ -440,6 +438,18 @@ namespace GrowattMonitorShared
         private string Display(Object data)
         {
             return Encoding.Default.GetString((byte[])data);
+        }
+
+        private void DumpTelegram(Telegram telegram)
+        {
+            if (telegram == null)
+                return;
+
+            Console.WriteLine("Telegram data:");
+            foreach (var item in telegram.Data)
+            {
+                Console.WriteLine($"{item.Key} : {item.Value}");
+            }
         }
     }
 }

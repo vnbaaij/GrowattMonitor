@@ -3,8 +3,8 @@
     public enum MessageType
     {
         ANNOUNCE = 0x0103,
-        DATA = 0x0104,
-        DATA2= 0x0150,
+        CURRDATA = 0x0104,
+        HISTDATA= 0x0150,
         PING = 0x0116,
         CONFIG = 0x0118,
         IDENTIFY = 0x0119,
