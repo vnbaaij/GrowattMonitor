@@ -1,0 +1,142 @@
+Timestamp: 2020-01-26 17:07:09, Length: 311 (137), CRC: 1E 59
+Direction: IN FROM INVERTER, Type: DATA
+0000: 00 08 00 05 01 37 01 04 0D 22 2C 43 58 46 46 75 .....7...",CXFFu
+0001: 45 2E 46 37 2E 33 7F 40 5E 46 23 43 60 46 68 7E E.F7.3@^F#C`Fh~
+0002: 75 6A 77 74 47 72 43 77 60 74 74 47 70 6B 85 61 ujwtGrCw`ttGpka
+0003: 74 74 47 72 6E 73 23 74 74 47 72 6F 76 61 74 74 ttGrns#ttGrovatt
+0004: 44 61 E1 7F B5 74 74 47 72 6F 65 61 74 74 47 72 DaáµttGroeattGr
+0005: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 46 77 owattGrowattGrFw
+0006: 61 E9 1B 45 31 D1 6B 61 90 74 47 72 6F 77 61 74 aé.E1ÑkatGrowat
+0007: 74 47 72 6F 77 61 74 74 47 73 40 7A 9C 74 74 47 tGrowattGs@zttG
+0008: 72 6F 5A 61 2D 3A 67 72 6F 77 61 74 74 47 66 6F roZa-:growattGfo
+0009: 77 2C 0D 74 47 72 7A 77 61 24 CD 47 72 F1 45 61 w,.tGrzwa$ÍGrñEa
+0010: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0011: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0012: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 owattGrowattGrow
+0013: 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 attGrowattGrowat
+0014: 2E 47 F4 6F 6E 72 7C 73 4D 71 75 77 61 74 6D 54 .Gôonr|sMquwatmT
+0015: 7A 68 7E 4C 40 74 47 72 76 64 67 61 7D 52 70 6F zh~L@tGrvdga}Rpo
+0016: 5B 61 6D 65 46 73 6F 77 6F 74 74 47 72 7E 76 60 [ameFsowottGr~v`
+0017: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0018: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0019: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 1E 59    owattGrowattG.Y
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 31 56 5A 47 38 32 JPC492227A1VZG82		16
+0001: 31 31 42 37 14 01 1A 11 02 0B 03 00 00 00 2C 00 11B7..........,.		32
+0002: 01 00 00 00 02 04 F2 00 00 00 00 00 01 04 42 00 ......ò.......B.		48
+0003: 00 00 00 00 01 00 00 00 03 13 8E 08 D4 00 00 00 ...........Ô...	64
+0004: 00 00 12 00 00 00 00 00 00 00 00 00 00 00 00 00 ................		80
+0005: 00 00 00 00 00 00 29 00 00 9D 6F 02 43 BE 1C 00 ......)..o.C¾..	96
+0006: E4 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ä...............		112
+0007: 00 01 2F 0D FD 00 00 00 00 00 2D 00 59 4E 20 00 ../.ý.....-.YN .		128
+0008: 00 00 00 00 00 00 14 00 00 4D 79 00 00 00 15 00 .........My.....		144
+0009: 00 50 B9 00 00 9E 32 00 00 00 00 00 00 00 00 00 .P¹..2.........		160
+0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................		176
+0011: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................		192
+0012: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................		208
+0013: 00 00 00 00 00 00 00 00 5A 00 86 00 19 13 08 07 ........Z......	224
+0014: 0A 03 1A 00 00 00 19 13 08 07 09 2D 34 00 00 00 ...........-4...		240
+0015: 19 13 06 15 09 15 02 00 2C 00 19 11 01 01 00 00 ........,.......		256
+0016: 0E 00 00 00 00 11 01 01 00 00 00 00 00 00 00 00 ................		272
+0017: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................		288
+0018: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................		304
+0019: 00 00 00 00 00                                  .....					309
+
+4A 50 43 34 39 32 32 32 37 41 															JPC492227A		10
+31 56 5A 47 38 32 31 31 42 37 															1VZG8211B7		20
+14 01 1A 11 02 0B 03 00 00 00 2C 														200126 110211	31
+("InvStat", new InverterValue("InvStat", "", 2, 0, "Status")),		00 01				1				33
+("Ppv", new InverterValue("Ppv", "W", 4, 1)),						00 00 00 02 		0.2				37
+("Vpv1", new InverterValue("Vpv1", "V", 2, 1)),						04 F2 				126.6			39
+("Ipv1", new InverterValue("Ipv1", "A", 2, 1)),						00 00 				0				41
+("Ppv1", new InverterValue("Ppv1", "W", 4, 1)),						00 00 00 01     	0.1				45
+("Vpv2", new InverterValue("Vpv2", "V", 2, 1)),						04 42 				109.0			47
+("Ipv2", new InverterValue("Ipv2", "A", 2, 1)),						00 00       		0				49
+("Ppv2", new InverterValue("Ppv2", "W", 4, 1)),						00 00 00 01 		0.1				53
+("Pac", new InverterValue("Pac", "W", 4, 1)),						00 00 00 03 		0.3				57
+("Fac", new InverterValue("Fac", "Hz", 2, 2)),						13 8E 				50.06			59
+("VacR", new InverterValue("VacR", "V", 2, 1)),						08 D4 				226.0			61
+("IacR", new InverterValue("IacR", "A", 2, 1)),						00 00 				0				63
+("PacR", new InverterValue("PacR", "W", 4, 1)),						00 00 00 12 		0.18			67
+("VacS", new InverterValue("VacS", "V", 2, 1)),						00 00 				0				69
+("IacS", new InverterValue("IacS", "A", 2, 1)),						00 00 				0				71
+("PacS", new InverterValue("PacS", "W", 4, 1)),						00 00 00 00 00 		0				75
+("VacT", new InverterValue("VacT", "V", 2, 1)),						00 00  				0				77
+("IacT", new InverterValue("IacT", "A", 2, 1)),						00 00 				0				79
+("PacT", new InverterValue("PacT", "W", 4, 1)),						00 00 00 00 		0				83
+("EacToday", new InverterValue("EacToday", "kWh", 4, 1)),			00 00 00 29  		4.1				87
+("EacTotal", new InverterValue("EacTotal", "kWh", 4, 1)),			00 00 9D 6F   		4030.3			91
+("Total", new InverterValue("Total", "s", 4, 1)),					02 43 BE 1C			‭37994012‬		95 /60/60/2 = 5276
+("Temp", new InverterValue("Temp", "&deg;C", 2, 1)),				00 E4  				22.8			97
+("ISOFault", new InverterValue("ISOFault", "V", 2, 1)),				00 00 				0				99
+("GFCIFault", new InverterValue("GFCIFault", "mA", 2, 1)),			00 00 				0				101
+("DCIFault", new InverterValue("DCIFault", "Hz", 2, 1)),			00 00 				0				103
+("VpvFault", new InverterValue("VpvFault", "V", 2, 1)),				00 00  				0				105
+("VacFault", new InverterValue("VacFault", "V", 2, 1)),				00 00 				0				107
+("FacFault", new InverterValue("FacFault", "", 2, 0)),				00 00 				0				109
+("TempFault", new InverterValue("TempFault", "&deg;C", 2, 1)),		00 00				0				111
+("Faultcode", new InverterValue("Faultcode", "", 2, 0)),			00 00 				0				113
+("IPMTemp", new InverterValue("IPMtemp", "&deg;C", 2, 1)),			01 2F  				30.3			115
+("Pbusvolt", new InverterValue("Pbusvolt", "V", 2, 1)),				0D FD  				358.1			117
+("Nbusvolt", new InverterValue("Nbusvolt", "V", 2, 1)),				00 00 				0				121
+("Unknown1", new InverterValue("Unknown1", "", 4, 0)),				00 00 00 2D  		45				125
+("Unknown2", new InverterValue("Unknown2", "", 4, 0)),				00 59 4E 20 		‭5852704‬			129
+("Unknown3", new InverterValue("Unknown3", "", 4, 0)),				00 00 00 00 		0				133
+("Epv1Today", new InverterValue("Epv1Today", "kWh", 4, 1)),			00 00 00 14 		2.0				137
+("Epv1Total", new InverterValue("Epv1Total", "kWh", 4, 1)),			00 00 4D 79  		1983.3			141
+("Epv2Today", new InverterValue("Epv2Today", "kWh", 4, 1)),			00 00 00 15 		2.1				145
+("Epv2Total", new InverterValue("Epv2Total", "kWh", 4, 1)),			00 00 50 B9  		2066.5			149
+("EpvTotal", new InverterValue("EpvTotal", "kWh", 4, 1)),			00 00 9E 32  		4049.8			153
+("Rac", new InverterValue("Rac", "Var", 4, 1)),						00 00 00 00 		0				157
+("ERacToday", new InverterValue("RacToday", "Kvarh", 4, 1)),		00 00 00 00			0				161
+("ERacTotal", new InverterValue("RacTotal", "Kvarh", 4, 1))  		00 00 00 00 		0				165
+																	00 00 00 00 		0				169
+																	00 00 00 00         0				173
+																	00 00 00 00         0				177
+																	00 00 00 00         0				181
+																	00 00 00 00         0				185
+																	00 00 00 00         0				189
+																	00 00 00 00         0				193
+																	00 00 00 00         0				197
+																	00 00 00 00         0				201
+																	00 00 00 00         0				205
+																	00 00 00 00         0				209
+																	00 00 00 00         0				213
+																	00 00 00 00         0				217
+																	00 5A 				90				219
+																	00 86				134				221
+																	00 19 				25				223
+																	13 08 				4872			225
+																	07 0A 				1802			227
+																	03 1A 				794				229
+																	00 00 				0				231
+																	00 19 				25				233
+																	13 08 				4872			235
+																	07 09 				1801			237
+																	2D 34 				11572			239
+																	00 00 				0				241
+																	00 19 				25				243
+																	13 06 				4870			245
+																	15 09 				5385			247
+																	15 02 				5378			249
+																	00 2C 				44				251
+																	00 19 				25				253
+																	11 01 				4353			257
+																	01 00 				256				259
+																	00 0E 				14				261
+																	00 00 				0				263
+																	00 00 				0				265
+																	11 01 				4353			267
+																	01 00				255				269
+																	00 00 00 00 						273
+																	00 00 00 00							277
+																	00 00 00 00 						281
+																	00 00 00 00 						285
+																	00 00 00 00							289
+																	00 00 00 00							293
+																	00 00 00 00 						297
+																	00 00 00 00 						301
+																	00 00 00 00 						305
+																	00 00 00 00							309
+																	00 00 00 00 						313	 
+																	

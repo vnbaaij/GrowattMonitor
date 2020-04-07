@@ -2,18 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace GrowattMonitorShared
 {
     public class Telegram
     {
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
+
+        public string Key { get; set; }
+
+        public string Datalogger { get; set; }
+
+        public string Inverter { get; set; }
+
+        public DateTime Timestamp { get; set; }
+
         public Dictionary<string, object> Data { get; private set; } = new Dictionary<string, object>();
 
+        public Telegram()
+        {
+
+        }
+        
         public Telegram(byte[] buffer)
         {
-            Data["datalogger"] = Encoding.Default.GetString(buffer[8..18]);
-            Data["inverter"] = Encoding.Default.GetString(buffer[18..28]);
-            Data["datetime"] = new DateTime(buffer[28], buffer[29], buffer[30], buffer[31], buffer[32], buffer[33]);
+            Datalogger = Encoding.Default.GetString(buffer[8..18]);
+            Inverter = Encoding.Default.GetString(buffer[18..28]);
+            Timestamp = new DateTime(2000+buffer[28], buffer[29], buffer[30], buffer[31], buffer[32], buffer[33]);
 
             byte[] energy;
 
@@ -25,6 +42,8 @@ namespace GrowattMonitorShared
                 Data[d.Item1] = value;
                 energy = d.Item2.Remaining;
             }
+
+            SetCosmosDBProperties();
         }
 
         public (string, InverterValue)[] GetDataList()
@@ -78,5 +97,25 @@ namespace GrowattMonitorShared
             };
         }
 
+        private void SetCosmosDBProperties()
+        {
+            Id = Timestamp.ToString("yyyyMMddHHmmss");
+            Key = Timestamp.ToString("yyyyMMdd");
+        }
+
+        public void Dump()
+        {
+            if (this == null)
+                return;
+            Console.WriteLine("==>");
+            Console.WriteLine("Telegram data:");
+            Console.WriteLine($"Datalogger: {Datalogger}");
+            Console.WriteLine($"Inverter: {Inverter}");
+            Console.WriteLine($"Timestamp: {Id}");
+            foreach (var item in Data)
+            {
+                Console.WriteLine($"{item.Key} : {item.Value}");
+            }
+        }
     }
 }

@@ -7,48 +7,60 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Cosmos;
+using GrowattMonitor.Configuration;
 using GrowattMonitorShared;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-namespace GrowattMonitorShared
+namespace GrowattMonitor
 {
     public class InverterMonitor
     {
-        private static readonly string inverterAddress = "192.168.1.103";
-        private static readonly string serverAddress = "server.growatt.com";
+        private readonly ILogger<InverterMonitor> _logger;
+        public readonly ConfigSettings _config;
+        private CosmosContainer _cosmosContainer;
 
         private static MonitorState _state = MonitorState.WAITING;
         private static Socket _inverterSocket = null;
         private static Socket _serverSocket = null;
 
-        private static ushort _version = 5;
         private byte[] _datalogger;
-        private bool bListenToInverter = true;
-        private static bool bFirstIdentify = true;
+        private bool listenToInverter = true;
+        private static bool firstIdentify = true;
 
         public List<Config> Config { get; set; } = new List<Config>();
 
-        public void Run()
+
+        public InverterMonitor(ILogger<InverterMonitor> logger, IOptions<ConfigSettings> config)
         {
+            _logger = logger;
+            _config = config.Value;
+        }
+
+        public void Run(CosmosContainer cosmosContainer)
+        {
+            _cosmosContainer = cosmosContainer;
+
             TcpListener listener = null;
             try
             {
-                IPAddress ip = IPAddress.Parse(inverterAddress);
+                IPAddress ip = IPAddress.Parse(_config.DataloggerReceiverAddress);
 
                 listener = new TcpListener(ip, 5279);
 
                 // Start listening for client requests.
                 listener.Start();
-                Console.Write("Monitor started...\n");
+                Console.WriteLine("Monitor started...");
 
 
                 // Enter the listening loop.
-                while (true)
+                while (Utils.IsDaylight(_config.Latitude, _config.Longitude))
                 {
                     // Buffer for reading data
-                    //byte[] bytes = new Byte[2048];
-
                     byte[] bytes = ReceiveBytes(listener);
                     // Handle data locally
                     ProcessBytes(bytes);
@@ -60,7 +72,9 @@ namespace GrowattMonitorShared
             }
             finally
             {
-                // Shutdown and end connection
+                Console.WriteLine("Monitor stopped...");
+
+                // Shutdown and end sockets
                 _inverterSocket?.Close();
                 _serverSocket?.Close();
 
@@ -75,9 +89,12 @@ namespace GrowattMonitorShared
                 // Everything is awesome!
                 return socket;
 
+            if (listener == null && !_config.ActAsProxy)
+                return null;
+
             try
             {
-                Console.Write($"\nWaiting to connect to '{host}'... ");
+                Console.Write($"Waiting to connect to '{host}'... ");
                 if (socket == null)
                     socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -94,7 +111,7 @@ namespace GrowattMonitorShared
                     else
                         socket.Connect(host, 5279);
 
-                Console.WriteLine($"...Connection established");
+                Console.WriteLine($"...connection established");
             }
             catch (SocketException e)
             {
@@ -109,12 +126,16 @@ namespace GrowattMonitorShared
             Socket s;
             int i = 0;
 
-            if (bListenToInverter)
+            if (listenToInverter)
+                s = _inverterSocket = ConnectSocket(_inverterSocket, _config.DataloggerReceiverAddress, listener);
+            else 
+                s = _serverSocket = ConnectSocket(_serverSocket, _config.GrowattServerAddress);
+
+            if (s == null && !_config.ActAsProxy)
             {
-                s = _inverterSocket = ConnectSocket(_inverterSocket, inverterAddress, listener);
+                listenToInverter = true;
+                return null;
             }
-            else
-                s = _serverSocket = ConnectSocket(_serverSocket, serverAddress);
 
             byte[] bytes = new byte[2048];
 
@@ -126,7 +147,7 @@ namespace GrowattMonitorShared
             {
                 if (e.SocketErrorCode == SocketError.TimedOut)
                 {
-                    bListenToInverter = true;
+                    listenToInverter = true;
                     return null;
                 }
             }
@@ -143,14 +164,13 @@ namespace GrowattMonitorShared
                 var msg = Message.CreateFromByteBuffer(buffer);
 
                 string source;
-                if (bListenToInverter)
+                if (listenToInverter)
                     source = "INVERTER";
                 else
                     source = "SERVER";
 
-                msg.Dump($"IN FROM {source}");
+                msg.Dump($"FROM {source}");
 
-                msg.Inverter = this;
                 Message reply = null;
 
                 if (msg != null)
@@ -170,45 +190,51 @@ namespace GrowattMonitorShared
         {
             Socket s;
             string dest;
-            if (!bListenToInverter)
+            bool sendMessage = true;
+
+            if (!listenToInverter)
             {
-                s = _inverterSocket = ConnectSocket(_inverterSocket, inverterAddress);
+                s = _inverterSocket = ConnectSocket(_inverterSocket, _config.DataloggerReceiverAddress);
                 dest = "INVERTER";
 
-                bListenToInverter = true;
+                listenToInverter = true;
             }
             else
             {
-                s = _serverSocket = ConnectSocket(_serverSocket, serverAddress);
+                s = _serverSocket = ConnectSocket(_serverSocket, _config.GrowattServerAddress);
                 dest = "SERVER";
 
-                //if (!msg.InIdentifyProcess)
-                bListenToInverter = false;
+                listenToInverter = false;
+
+                sendMessage = _config.ActAsProxy;
 
             }
 
-            s.SendBufferSize = msg.Size;
-            int i = s.Send(msg.Content);
+            if (sendMessage)
+            {
+                s.SendBufferSize = msg.Content.Length;
 
-            if (i > 0)
-                msg.Dump($"OUT TO {dest}");
+                int i = s.Send(msg.Content);
+
+                if (i > 0)
+                    msg.Dump($"TO {dest}");
+            }
         }
 
         private void SendIdentify()
         {
             byte[] request = _datalogger.Concat(new byte[] { 0x00, 0x04, 0x00, 0x15 }).ToArray();
 
-            var msg = Message.Create(_version, MessageType.IDENTIFY, request, 1); // (ushort)data["id"]); //, 0x51);
+            var msg = Message.Create(MessageType.IDENTIFY, request, 1); // (ushort)data["id"]); //, 0x51);
 
             SendMessage(msg);
 
-            _state = MonitorState.IDENTIFY_SENT;
         }
 
         private Message SendConfigInterval(Message msg)
         {
             byte[] request = _datalogger.Concat(new byte[] { 0x0, 0x04, 0x0, 0x01, 0x00 }).ToArray();
-            Message reply = Message.Create(msg.Version, MessageType.CONFIG, request);
+            Message reply = Message.Create(MessageType.CONFIG, request);
             return reply;
         }
 
@@ -223,12 +249,7 @@ namespace GrowattMonitorShared
                 .Concat(dt)
                 .ToArray();
 
-
-            //Buffer.BlockCopy(_datalogger, 0, content, 0, _datalogger.Length);
-            //Buffer.BlockCopy(new byte[] {0x00, 0x1F, 0x00, 0x13 }, 0, content, _datalogger.Length, 4);
-            //Buffer.BlockCopy(dt, 0, content, _datalogger.Length + 4, dt.Length);
-
-            Message reply = Message.Create(msg.Version, MessageType.CONFIG, content);
+            Message reply = Message.Create(MessageType.CONFIG, content);
             return reply;
         }
 
@@ -237,46 +258,48 @@ namespace GrowattMonitorShared
             var data = msg.Decode();
             var reply = msg.Type switch
             {
-                MessageType.PING => ProcessPing(msg, (Dictionary<string, object>)data),
+                MessageType.PING => ProcessPing((Dictionary<string, object>)data),
                 MessageType.IDENTIFY => ProcessIdentify(msg),
                 MessageType.ANNOUNCE => ProcessAnnounce(msg, (Dictionary<string, object>)data),
                 MessageType.CURRDATA => ProcessData(msg, (Telegram)data),
                 MessageType.HISTDATA => ProcessData(msg, (Telegram)data),
                 MessageType.CONFIG => ProcessConfig(msg, (Config)data),
                 MessageType.REBOOT => null,
-                //MessageType.CONFACK => //ProcessConfAck((List<Config>)data),
+                //MessageType.CONFACK => ProcessConfAck((List<Config>)data),
                 _ => null,
             };
             return reply;
         }
-        private Message ProcessPing(Message msg, Dictionary<string, object> data)
+        private Message ProcessPing(Dictionary<string, object> data)
         {
-            Console.WriteLine("==>");
-            Console.WriteLine($"Received ping from {Display(data["datalogger"])}");
-            _datalogger = (byte[])data["datalogger"];
-
-            Message reply = Message.Create(msg.Version, MessageType.PING, (byte[])data["datalogger"], (ushort)data["id"]);
+            if (listenToInverter)
+            {
+                Console.WriteLine($"==> Received ping from {Display(data["datalogger"])}");
+                if (_datalogger == null)
+                    _datalogger = (byte[])data["datalogger"];
+            }
 
             // Send Identify
-            //if (_state == MonitorState.WAITING)
-            //{
-            //    _state = MonitorState.OPEN;
-            //    SendIdentify();
-            //    if (_state != MonitorState.IDENTIFY_SENT)
-            //        Console.WriteLine("Something went wrong with sending query");
-            //}
+            if (!_config.ActAsProxy)
+            {
+                _state = MonitorState.OPEN;
+                SendIdentify();
+                if (_state != MonitorState.IDENTIFY_SENT)
+                    Console.WriteLine("Something went wrong with sending query");
+            }
+
+            Message reply = Message.Create(MessageType.PING, (byte[])data["datalogger"], (ushort)data["id"]);
             return reply;
         }
 
         private Message ProcessIdentify(Message msg)
         {
-            if (bListenToInverter)
+            if (listenToInverter)
             {
                 var cfg = msg.DecodeIdentifyDetail();
                 Config.Add(cfg); //.Index] = c.Value;
 
-                Console.WriteLine("==>");
-                Console.WriteLine($"Inverter says: {cfg.Display()}");
+                Console.WriteLine($"==> Inverter says: {cfg.Display()}");
 
                 //if (_state >= MonitorState.IDENTIFY_SENT && cfg.Index == "0x1F")
                 //{
@@ -295,30 +318,14 @@ namespace GrowattMonitorShared
             }
             else
             {
-
-                Console.WriteLine("==>");
-                Console.WriteLine("Identify reply received from server");
-
                 var idreqdata = msg.DecodeIdentifyRequest();
-                if (bFirstIdentify)
+                if (firstIdentify)
                 {
-                    Console.WriteLine($"\nReveived request for config items {idreqdata["first"]} to {idreqdata["last"]}...");
-                    bFirstIdentify = false;
+                    Console.WriteLine($"==> Reveived request for config items {idreqdata["first"]} to {idreqdata["last"]}...");
+                    firstIdentify = false;
                 }
-
-                //byte[] ack = ((byte[])idreqdata["datalogger"])
-                //    .Concat(BitConverter.GetBytes((ushort)idreqdata["first"]))
-                //    .Concat(BitConverter.GetBytes((ushort)idreqdata["last"])).ToArray();
-
-                //reply = Message.Create(5, MessageType.IDENTIFY, ack);
-                //msg =  null;
-                //_state = InverterState.IDENTIFY_REPLIED;
-
-                //SendConfig();
-
-
             }
-            Message reply = Message.Create(msg.Version, msg.Type, msg.Body, msg.Id);
+            Message reply = Message.Create(msg.Type, msg.Body, msg.Id);
             return reply;
         }
 
@@ -326,7 +333,7 @@ namespace GrowattMonitorShared
         {
             if (!msg.IsAck)
             {
-                if (bListenToInverter)
+                if (listenToInverter)
                 {
 
                     Console.WriteLine("==>");
@@ -358,51 +365,30 @@ namespace GrowattMonitorShared
                     //DumpBytes("IN", (byte[])data["blob2"], false);
                     //DumpBytes("IN", (byte[])data["blob3"], false);
                     //DumpBytes("IN", (byte[])data["blob4"], false);
-
-
-                    _version = msg.Version;
-                    _state = MonitorState.ANNOUNCE_SENT;
-
-                }
-                else
-                {
-                    //Message reply = Message.Create(msg.Version, msg.Type, new byte[] { 0x00 }, (ushort)data["id"]);
-
-                    _version = msg.Version;
-                    _state = MonitorState.ANNOUNCE_RCVD;
-                    //return msg; //reply;
                 }
             }
             else
             {
-                Console.WriteLine("==>");
-                Console.WriteLine($"ANNOUNCE ACK received");
+                Console.WriteLine($"==> ANNOUNCE ACK received");
             }
 
-            Message reply = Message.Create(msg.Version, msg.Type, msg.Body, msg.Id);
+            Message reply = Message.Create(msg.Type, msg.Body, msg.Id);
             return reply;
         }
 
         private Message ProcessData(Message msg, Telegram telegram)
         {
-            if (bListenToInverter)
+            if (msg.IsAck)
             {
-                _state = MonitorState.DATA_RCVD;
-
-                Console.WriteLine("==>");
-                Console.WriteLine($"Received data");
-
-                DumpTelegram(telegram);
-                //byte[] request = new byte[] { 0x00 };
-
-                //var reply = Message.Create(_version, msg.Type, request, msg.Id);
-
-                //$measurement = new measurement(new repository\memory());
-                //$measurement->readFromTelegram($this->data);
-                //$measurement->save();
+                Console.WriteLine("==> DATA ACK received");
+            }
+            if (listenToInverter)
+            {
+                //telegram.Dump();
+                SaveDataJson(telegram);
             }
 
-            Message reply = Message.Create(msg.Version, msg.Type, msg.Body, msg.Id);
+            Message reply = Message.Create(msg.Type, msg.Body, msg.Id);
             return reply;
         }
 
@@ -410,8 +396,7 @@ namespace GrowattMonitorShared
         {
             if (!msg.IsAck)
             {
-                Console.WriteLine("==>");
-                Console.WriteLine($"Configuration received: {cfg.Display()}");
+                Console.WriteLine($"==> Configuration received: {cfg.Display()}");
 
                 // Send Identify
                 //if (_state == MonitorState.TIME_SET)
@@ -427,29 +412,55 @@ namespace GrowattMonitorShared
             }
             else
             {
-                Console.WriteLine("==>");
-                Console.WriteLine($"Configuration ACK received");
+                Console.WriteLine($"==> Configuration ACK received");
             }
-            Message reply = Message.Create(msg.Version, MessageType.CONFIG, msg.Body, msg.Id);
+            Message reply = Message.Create(MessageType.CONFIG, msg.Body, msg.Id);
             return reply;
         }
 
+        private async void SaveDataJson(Telegram data)
+        {
+
+            var options = new JsonSerializerOptions
+            {
+                IgnoreNullValues = true,
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+
+            };
+
+            var json = JsonSerializer.Serialize(data, options);
+             Console.WriteLine($"json: {json}");
+
+
+            //try
+            //{
+            //    ItemResponse<Telegram> cosmosResponse = await _cosmosContainer.ReadItemAsync<Telegram>(data.Id, new PartitionKey(data.Key));
+            //    _logger.LogInformation("Item in database with id: {0} already exists\n", cosmosResponse.Value.Id);
+            //}
+            //catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            //{
+            try 
+            {
+                ItemResponse<Telegram> cosmosResponse = await _cosmosContainer.CreateItemAsync<Telegram>(data, new PartitionKey(data.Key));
+            }
+            catch (CosmosException ex) when (ex.Status == (int) HttpStatusCode.Conflict)
+            {
+                 Console.WriteLine("Item in database with id: {0} already exists\n", data.Id);
+            }
+            finally{
+                Console.WriteLine("Created item in database with id: {0}\n", data.Id);
+            }
+
+            //}
+        }
 
         private string Display(Object data)
         {
             return Encoding.Default.GetString((byte[])data);
         }
 
-        private void DumpTelegram(Telegram telegram)
-        {
-            if (telegram == null)
-                return;
 
-            Console.WriteLine("Telegram data:");
-            foreach (var item in telegram.Data)
-            {
-                Console.WriteLine($"{item.Key} : {item.Value}");
-            }
-        }
+       
     }
 }

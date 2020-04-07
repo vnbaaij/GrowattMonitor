@@ -1,0 +1,1013 @@
+info: GrowattMonitor.GrowattWorker[0]
+      Worker running at: 01/27/2020 16:56:51 +01:00
+Monitor started...
+
+Waiting to connect to '192.168.1.108'... ...Connection established
+
+Timestamp: 2020-01-27 16:57:04, Length: 12 (0C), CRC: DB E0
+Direction: IN FROM INVERTER, Type: PING
+0000: 00 02 00 05 00 0C 01 16 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E DB E0                                     E.Ûà
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41                   JPC492227A
+==>
+Received ping from JPC492227A
+
+Waiting to connect to 'server.growatt.com'... ...Connection established
+
+Timestamp: 2020-01-27 16:57:04, Length: 12 (0C), CRC: DB E0
+Direction: OUT TO SERVER, Type: PING
+0000: 00 02 00 05 00 0C 01 16 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E DB E0                                     E.Ûà
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41                   JPC492227A
+
+Timestamp: 2020-01-27 16:57:05, Length: 16 (10), CRC: 49 1E
+Direction: IN FROM SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 10 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 65 74 61 49 1E                         E.wetaI.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 04 00 15       JPC492227A....
+==>
+Identify reply received from server
+
+Reveived request for config items 4 to 21...
+
+Timestamp: 2020-01-27 16:57:05, Length: 16 (10), CRC: 49 1E
+Direction: OUT TO INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 10 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 65 74 61 49 1E                         E.wetaI.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 04 00 15       JPC492227A....
+
+Timestamp: 2020-01-27 16:57:05, Length: 17 (11), CRC: 12 16
+Direction: IN FROM INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 11 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 65 74 75 76 12 16                      E.wetuv..
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 04 00 01 31    JPC492227A....1
+==>
+Inverter says: Update Interval(0x04): 1
+
+Timestamp: 2020-01-27 16:57:05, Length: 17 (11), CRC: 12 16
+Direction: OUT TO SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 11 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 65 74 75 76 12 16                      E.wetuv..
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 04 00 01 31    JPC492227A....1
+
+Timestamp: 2020-01-27 16:57:05, Length: 12 (0C), CRC: DB E0
+Direction: IN FROM SERVER, Type: PING
+0000: 00 02 00 05 00 0C 01 16 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E DB E0                                     E.Ûà
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41                   JPC492227A
+==>
+Received ping from JPC492227A
+
+Timestamp: 2020-01-27 16:57:05, Length: 12 (0C), CRC: DB E0
+Direction: OUT TO INVERTER, Type: PING
+0000: 00 02 00 05 00 0C 01 16 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E DB E0                                     E.Ûà
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41                   JPC492227A
+
+Timestamp: 2020-01-27 16:57:06, Length: 217 (D9), CRC: E3 72
+Direction: IN FROM INVERTER, Type: ANNOUNCE
+0000: 00 02 00 05 00 D9 01 03 0D 22 2C 43 58 46 46 75 .....Ù...",CXFFu
+0001: 45 2E 46 37 2E 33 7F 40 5E 46 23 43 74 47 72 6F E.F7.3@^F#CtGro
+0002: 77 61 76 74 47 72 43 76 60 74 75 47 72 6F 13 61 wavtGrCv`tuGro.a
+0003: 10 53 57 72 6F 02 51 7A 64 06 3A 5E 59 51 74 74 .SWro.Qzd.:^YQtt
+0004: 47 72 6F 77 61 74 75 47 76 6C 9F 61 6A 73 03 78 GrowatuGvlajs.x
+0005: 29 65 F0 60 6A 76 24 35 30 59 46 45 76 30 58 77 )eð`jv$50YFEv0Xw
+0006: 71 85 55 47 73 6F 77 61 74 74 47 72 6F 70 54 7E qUGsowattGropT~
+0007: 32 55 E3 7C EE 66 EA 7D A5 60 FC 64 EC 74 A6 45 2Uã|îfê}¥`üdìt¦E
+0008: 73 6F 5A 61 2D 73 A3 72 6E 77 7A 74 64 47 40 6F soZa-s£rnwztdG@o
+0009: 4F 62 9C 77 AF 71 87 74 89 77 9C 44 9A 6C 9F 62 Obw¯qtwDlb
+0010: 9C 33 35 1D 18 16 15 00 54 0E 1C 19 12 13 00 11 35.....T.......
+0011: 35 13 07 15 00 45 40 76 40 6F 77 61 75 75 76 72 5....E@v@owauuvr
+0012: 6F 77 60 74 74 47 72 6F 77 61 74 74 46 61 F3 77 ow`ttGrowattFaów
+0013: A9 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 E3 ©ttGrowattGrowaã
+0014: 72                                              r
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 31 56 5A 47 38 32 JPC492227A1VZG82
+0001: 31 31 42 37 00 00 00 00 00 00 02 00 00 00 2C 01 11B7..........,.
+0002: 01 00 01 00 00 00 64 00 64 27 10 00 00 75 30 0E ......d.d'...u0.
+0003: 10 41 48 31 2E 30 00 00 00 00 00 00 00 00 01 00 .AH1.0..........
+0004: 04 03 E8 00 1E 07 44 0A 46 12 91 14 1E 31 56 5A ..è...D.F...1VZ
+0005: 47 38 32 31 31 42 37 00 10 F1 21 00 01 00 00 00 G8211B7..ñ!.....
+0006: 00 00 00 00 00 07 35 0A 46 12 91 13 99 07 9E 09 ......5.F....
+0007: E2 12 93 13 8D 00 D2 02 01 00 2D 00 59 07 E4 00 â...Ò...-.Y.ä.
+0008: 01 00 1B 00 10 00 32 00 38 03 E8 03 E8 03 E8 03 ......2.8.è.è.è.
+0009: E8 03 E8 03 E8 03 E8 03 E8 47 72 6F 77 61 74 74 è.è.è.è.èGrowatt
+0010: 20 49 6E 76 65 72 74 65 72 61 68 62 61 31 34 31  Inverterahba141
+0011: 32 00 00 00 01 01 31 00 00 00 01 00 00 00 00 00 2.....1.........
+0012: 00 00 00 00 01 13 9C 00 C8 00 00 00 00 00 00 00 .......È.......
+0013: 00 00 00 00 00 00 00                            .......
+==>
+Received announcement from 'Growatt Inverter' - 1VZG8211B7 (1VZG8211B7)
+Data logger: JPC492227A
+Version: ahba1412
+Build: AH1.0
+Model A0B0D1T0PFU1M2S1
+
+Timestamp: 2020-01-27 16:57:06, Length: 217 (D9), CRC: E3 72
+Direction: OUT TO SERVER, Type: ANNOUNCE
+0000: 00 02 00 05 00 D9 01 03 0D 22 2C 43 58 46 46 75 .....Ù...",CXFFu
+0001: 45 2E 46 37 2E 33 7F 40 5E 46 23 43 74 47 72 6F E.F7.3@^F#CtGro
+0002: 77 61 76 74 47 72 43 76 60 74 75 47 72 6F 13 61 wavtGrCv`tuGro.a
+0003: 10 53 57 72 6F 02 51 7A 64 06 3A 5E 59 51 74 74 .SWro.Qzd.:^YQtt
+0004: 47 72 6F 77 61 74 75 47 76 6C 9F 61 6A 73 03 78 GrowatuGvlajs.x
+0005: 29 65 F0 60 6A 76 24 35 30 59 46 45 76 30 58 77 )eð`jv$50YFEv0Xw
+0006: 71 85 55 47 73 6F 77 61 74 74 47 72 6F 70 54 7E qUGsowattGropT~
+0007: 32 55 E3 7C EE 66 EA 7D A5 60 FC 64 EC 74 A6 45 2Uã|îfê}¥`üdìt¦E
+0008: 73 6F 5A 61 2D 73 A3 72 6E 77 7A 74 64 47 40 6F soZa-s£rnwztdG@o
+0009: 4F 62 9C 77 AF 71 87 74 89 77 9C 44 9A 6C 9F 62 Obw¯qtwDlb
+0010: 9C 33 35 1D 18 16 15 00 54 0E 1C 19 12 13 00 11 35.....T.......
+0011: 35 13 07 15 00 45 40 76 40 6F 77 61 75 75 76 72 5....E@v@owauuvr
+0012: 6F 77 60 74 74 47 72 6F 77 61 74 74 46 61 F3 77 ow`ttGrowattFaów
+0013: A9 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 E3 ©ttGrowattGrowaã
+0014: 72                                              r
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 31 56 5A 47 38 32 JPC492227A1VZG82
+0001: 31 31 42 37 00 00 00 00 00 00 02 00 00 00 2C 01 11B7..........,.
+0002: 01 00 01 00 00 00 64 00 64 27 10 00 00 75 30 0E ......d.d'...u0.
+0003: 10 41 48 31 2E 30 00 00 00 00 00 00 00 00 01 00 .AH1.0..........
+0004: 04 03 E8 00 1E 07 44 0A 46 12 91 14 1E 31 56 5A ..è...D.F...1VZ
+0005: 47 38 32 31 31 42 37 00 10 F1 21 00 01 00 00 00 G8211B7..ñ!.....
+0006: 00 00 00 00 00 07 35 0A 46 12 91 13 99 07 9E 09 ......5.F....
+0007: E2 12 93 13 8D 00 D2 02 01 00 2D 00 59 07 E4 00 â...Ò...-.Y.ä.
+0008: 01 00 1B 00 10 00 32 00 38 03 E8 03 E8 03 E8 03 ......2.8.è.è.è.
+0009: E8 03 E8 03 E8 03 E8 03 E8 47 72 6F 77 61 74 74 è.è.è.è.èGrowatt
+0010: 20 49 6E 76 65 72 74 65 72 61 68 62 61 31 34 31  Inverterahba141
+0011: 32 00 00 00 01 01 31 00 00 00 01 00 00 00 00 00 2.....1.........
+0012: 00 00 00 00 01 13 9C 00 C8 00 00 00 00 00 00 00 .......È.......
+0013: 00 00 00 00 00 00 00                            .......
+
+Timestamp: 2020-01-27 16:57:06, Length: 3 (03), CRC: 3A 9A
+Direction: IN FROM SERVER, Type: ANNOUNCE
+0000: 00 02 00 05 00 03 01 03 47 3A 9A                ........G:
+PAYLOAD
+0000: 00                                              .
+
+Timestamp: 2020-01-27 16:57:06, Length: 3 (03), CRC: 3A 9A
+Direction: OUT TO INVERTER, Type: ANNOUNCE
+0000: 00 02 00 05 00 03 01 03 47 3A 9A                ........G:
+PAYLOAD
+0000: 00                                              .
+
+Timestamp: 2020-01-27 16:57:06, Length: 17 (11), CRC: EE 17
+Direction: IN FROM INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 11 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 64 74 75 76 EE 17                      E.wdtuvî.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 05 00 01 31    JPC492227A....1
+==>
+Inverter says: Modbus Range low(0x05): 1
+
+Timestamp: 2020-01-27 16:57:06, Length: 17 (11), CRC: EE 17
+Direction: OUT TO SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 11 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 64 74 75 76 EE 17                      E.wdtuvî.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 05 00 01 31    JPC492227A....1
+
+Timestamp: 2020-01-27 16:57:41, Length: 18 (12), CRC: DA 5E
+Direction: IN FROM INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 12 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 67 74 76 74 40 DA 5E                   E.wgtvt@Ú^
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 06 00 02 33 32 JPC492227A....32
+0001:
+==>
+Inverter says: Modbus Range high(0x06): 32
+
+Timestamp: 2020-01-27 16:57:41, Length: 18 (12), CRC: DA 5E
+Direction: OUT TO SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 12 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 67 74 76 74 40 DA 5E                   E.wgtvt@Ú^
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 06 00 02 33 32 JPC492227A....32
+0001:
+
+Timestamp: 2020-01-27 16:57:41, Length: 17 (11), CRC: 78 D6
+Direction: IN FROM SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 11 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 66 74 75 1F 78 D6                      E.wftu.xÖ
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 07 00 01 58    JPC492227A....X
+==>
+Identify reply received from server
+
+Timestamp: 2020-01-27 16:57:41, Length: 17 (11), CRC: 78 D6
+Direction: OUT TO INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 11 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 66 74 75 1F 78 D6                      E.wftu.xÖ
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 07 00 01 58    JPC492227A....X
+
+Timestamp: 2020-01-27 16:57:41, Length: 26 (1A), CRC: E2 1D
+Direction: IN FROM INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 1A 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 69 74 7E 0D 22 2C 43 58 46 46 75 45 2E E.wit~.",CXFFuE.
+0002: E2 1D                                           â.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 08 00 0A 4A 50 JPC492227A....JP
+0001: 43 34 39 32 32 32 37 41                         C492227A
+==>
+Inverter says: Serial Number(0x08): JPC492227A
+
+Timestamp: 2020-01-27 16:57:41, Length: 26 (1A), CRC: E2 1D
+Direction: OUT TO SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 1A 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 69 74 7E 0D 22 2C 43 58 46 46 75 45 2E E.wit~.",CXFFuE.
+0002: E2 1D                                           â.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 08 00 0A 4A 50 JPC492227A....JP
+0001: 43 34 39 32 32 32 37 41                         C492227A
+
+Timestamp: 2020-01-27 16:57:41, Length: 20 (14), CRC: 49 C3
+Direction: IN FROM SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 14 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 68 74 70 1F 2A 37 2F 49 C3             E.whtp.*7/IÃ
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 09 00 04 58 58 JPC492227A....XX
+0001: 58 58                                           XX
+==>
+Identify reply received from server
+
+Timestamp: 2020-01-27 16:57:41, Length: 20 (14), CRC: 49 C3
+Direction: OUT TO INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 14 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 68 74 70 1F 2A 37 2F 49 C3             E.whtp.*7/IÃ
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 09 00 04 58 58 JPC492227A....XX
+0001: 58 58                                           XX
+
+Timestamp: 2020-01-27 16:57:41, Length: 17 (11), CRC: 3A D5
+Direction: IN FROM INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 11 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 6B 74 75 77 3A D5                      E.wktuw:Õ
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0A 00 01 30    JPC492227A....0
+==>
+Inverter says: ?(0x0A): 0
+
+Timestamp: 2020-01-27 16:57:41, Length: 17 (11), CRC: 3A D5
+Direction: OUT TO SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 11 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 6B 74 75 77 3A D5                      E.wktuw:Õ
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0A 00 01 30    JPC492227A....0
+
+Timestamp: 2020-01-27 16:57:41, Length: 45 (2D), CRC: 34 09
+Direction: IN FROM SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 2D 01 19 0D 22 2C 43 58 46 46 75 .....-...",CXFFu
+0001: 45 2E 77 6A 74 69 64 51 5E 4E 53 5A 45 71 4A 41 E.wjtidQ^NSZEqJA
+0002: 44 4F 47 41 68 13 1F 07 4E 0C 19 2B 5D 4C 4F 51 DOGAh...N..+]LOQ
+0003: 4C 45 64 34 09                                  LEd4.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0B 00 1D 23 23 JPC492227A....##
+0001: 31 39 32 2E 31 36 38 2E 33 2E 33 35 2F 61 70 70 192.168.3.35/app
+0002: 2F 78 6D 6C 2F 23 38 30 38 31 23                /xml/#8081#
+==>
+Identify reply received from server
+
+Timestamp: 2020-01-27 16:57:41, Length: 45 (2D), CRC: 34 09
+Direction: OUT TO INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 2D 01 19 0D 22 2C 43 58 46 46 75 .....-...",CXFFu
+0001: 45 2E 77 6A 74 69 64 51 5E 4E 53 5A 45 71 4A 41 E.wjtidQ^NSZEqJA
+0002: 44 4F 47 41 68 13 1F 07 4E 0C 19 2B 5D 4C 4F 51 DOGAh...N..+]LOQ
+0003: 4C 45 64 34 09                                  LEd4.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0B 00 1D 23 23 JPC492227A....##
+0001: 31 39 32 2E 31 36 38 2E 33 2E 33 35 2F 61 70 70 192.168.3.35/app
+0002: 2F 78 6D 6C 2F 23 38 30 38 31 23                /xml/#8081#
+
+Timestamp: 2020-01-27 16:57:41, Length: 31 (1F), CRC: C8 25
+Direction: IN FROM INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 1F 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 6D 74 7B 1F 2A 37 2F 39 2C 2C 1F 2A 37 E.wmt{.*7/9,,.*7
+0002: 2F 39 2C 2C 1F C8 25                            /9,,.È%
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0C 00 0F 58 58 JPC492227A....XX
+0001: 58 58 58 58 58 58 58 58 58 58 58 58 58          XXXXXXXXXXXXX
+==>
+Inverter says: DNS(0x0C): XXXXXXXXXXXXXXX
+
+Timestamp: 2020-01-27 16:57:41, Length: 31 (1F), CRC: C8 25
+Direction: OUT TO SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 1F 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 6D 74 7B 1F 2A 37 2F 39 2C 2C 1F 2A 37 E.wmt{.*7/9,,.*7
+0002: 2F 39 2C 2C 1F C8 25                            /9,,.È%
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0C 00 0F 58 58 JPC492227A....XX
+0001: 58 58 58 58 58 58 58 58 58 58 58 58 58          XXXXXXXXXXXXX
+
+Timestamp: 2020-01-27 16:57:41, Length: 18 (12), CRC: 7A BA
+Direction: IN FROM SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 12 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 6C 74 76 76 43 7A BA                   E.wltvvCzº
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0D 00 02 31 31 JPC492227A....11
+0001:
+==>
+Identify reply received from server
+
+Timestamp: 2020-01-27 16:57:42, Length: 18 (12), CRC: 7A BA
+Direction: OUT TO INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 12 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 6C 74 76 76 43 7A BA                   E.wltvvCzº
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0D 00 02 31 31 JPC492227A....11
+0001:
+
+Timestamp: 2020-01-27 16:57:42, Length: 28 (1C), CRC: 99 44
+Direction: IN FROM INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 1C 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 6F 74 78 76 4B 5D 59 50 42 4C 69 43 41 E.wotxvK]YPBLiCA
+0002: 45 51 99 44                                     EQD
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0E 00 0C 31 39 JPC492227A....19
+0001: 32 2E 31 36 38 2E 31 2E 32 30                   2.168.1.20
+==>
+Inverter says: Local IP(0x0E): 192.168.1.20
+
+Timestamp: 2020-01-27 16:57:42, Length: 28 (1C), CRC: 99 44
+Direction: OUT TO SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 1C 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 6F 74 78 76 4B 5D 59 50 42 4C 69 43 41 E.wotxvK]YPBLiCA
+0002: 45 51 99 44                                     EQD
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0E 00 0C 31 39 JPC492227A....19
+0001: 32 2E 31 36 38 2E 31 2E 32 30                   2.168.1.20
+
+Timestamp: 2020-01-27 16:57:42, Length: 18 (12), CRC: 2A 04
+Direction: IN FROM SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 12 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 6E 74 76 7F 42 2A 04                   E.wntvB*.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0F 00 02 38 30 JPC492227A....80
+0001:
+==>
+Identify reply received from server
+
+Timestamp: 2020-01-27 16:57:42, Length: 18 (12), CRC: 2A 04
+Direction: OUT TO INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 12 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 6E 74 76 7F 42 2A 04                   E.wntvB*.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 0F 00 02 38 30 JPC492227A....80
+0001:
+
+Timestamp: 2020-01-27 16:57:42, Length: 33 (21), CRC: 70 7F
+Direction: IN FROM INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 21 01 19 0D 22 2C 43 58 46 46 75 .....!...",CXFFu
+0001: 45 2E 77 71 74 65 05 46 55 32 57 4E 46 03 48 58 E.wqte.FU2WNF.HX
+0002: 44 5B 37 35 7D 4A 58 70 7F                      D[75}JXp
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 10 00 11 42 34 JPC492227A....B4
+0001: 3A 45 36 3A 32 44 3A 37 33 3A 43 41 3A 38 37    :E6:2D:73:CA:87
+==>
+Inverter says: Mac Address(0x10): B4:E6:2D:73:CA:87
+
+Timestamp: 2020-01-27 16:57:42, Length: 33 (21), CRC: 70 7F
+Direction: OUT TO SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 21 01 19 0D 22 2C 43 58 46 46 75 .....!...",CXFFu
+0001: 45 2E 77 71 74 65 05 46 55 32 57 4E 46 03 48 58 E.wqte.FU2WNF.HX
+0002: 44 5B 37 35 7D 4A 58 70 7F                      D[75}JXp
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 10 00 11 42 34 JPC492227A....B4
+0001: 3A 45 36 3A 32 44 3A 37 33 3A 43 41 3A 38 37    :E6:2D:73:CA:87
+
+Timestamp: 2020-01-27 16:57:42, Length: 29 (1D), CRC: 6F 21
+Direction: IN FROM SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 1D 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 70 74 79 76 4B 5D 59 50 42 4C 69 43 41 E.wptyvK]YPBLiCA
+0002: 46 51 4C 6F 21                                  FQLo!
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 11 00 0D 31 39 JPC492227A....19
+0001: 32 2E 31 36 38 2E 31 2E 31 30 38                2.168.1.108
+==>
+Identify reply received from server
+
+Timestamp: 2020-01-27 16:57:42, Length: 29 (1D), CRC: 6F 21
+Direction: OUT TO INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 1D 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 70 74 79 76 4B 5D 59 50 42 4C 69 43 41 E.wptyvK]YPBLiCA
+0002: 46 51 4C 6F 21                                  FQLo!
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 11 00 0D 31 39 JPC492227A....19
+0001: 32 2E 31 36 38 2E 31 2E 31 30 38                2.168.1.108
+
+Timestamp: 2020-01-27 16:57:42, Length: 20 (14), CRC: E0 B8
+Direction: IN FROM INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 14 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 73 74 70 72 40 58 4E E0 B8             E.wstpr@XNà¸
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 12 00 04 35 32 JPC492227A....52
+0001: 37 39                                           79
+==>
+Inverter says: Server Port(0x12): 5279
+
+Timestamp: 2020-01-27 16:57:42, Length: 20 (14), CRC: E0 B8
+Direction: OUT TO SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 14 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 73 74 70 72 40 58 4E E0 B8             E.wstpr@XNà¸
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 12 00 04 35 32 JPC492227A....52
+0001: 37 39                                           79
+
+Timestamp: 2020-01-27 16:57:42, Length: 16 (10), CRC: 82 6F
+Direction: IN FROM SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 10 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 72 74 74 82 6F                         E.wrtto
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 13 00 00       JPC492227A....
+==>
+Identify reply received from server
+
+Timestamp: 2020-01-27 16:57:42, Length: 16 (10), CRC: 82 6F
+Direction: OUT TO INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 10 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 72 74 74 82 6F                         E.wrtto
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 13 00 00       JPC492227A....
+
+Timestamp: 2020-01-27 16:57:42, Length: 36 (24), CRC: 23 E8
+Direction: IN FROM INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 24 01 19 0D 22 2C 43 58 46 46 75 .....$...",CXFFu
+0001: 45 2E 77 75 74 60 1F 2A 37 2F 39 2C 2C 1F 2A 37 E.wut`.*7/9,,.*7
+0002: 2F 39 2C 2C 1F 2A 37 2F 39 2C 23 E8             /9,,.*7/9,#è
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 14 00 14 58 58 JPC492227A....XX
+0001: 58 58 58 58 58 58 58 58 58 58 58 58 58 58 58 58 XXXXXXXXXXXXXXXX
+0002: 58 58                                           XX
+==>
+Inverter says: Device Type(0x14): XXXXXXXXXXXXXXXXXXXX
+
+Timestamp: 2020-01-27 16:57:42, Length: 36 (24), CRC: 23 E8
+Direction: OUT TO SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 24 01 19 0D 22 2C 43 58 46 46 75 .....$...",CXFFu
+0001: 45 2E 77 75 74 60 1F 2A 37 2F 39 2C 2C 1F 2A 37 E.wut`.*7/9,,.*7
+0002: 2F 39 2C 2C 1F 2A 37 2F 39 2C 23 E8             /9,,.*7/9,#è
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 14 00 14 58 58 JPC492227A....XX
+0001: 58 58 58 58 58 58 58 58 58 58 58 58 58 58 58 58 XXXXXXXXXXXXXXXX
+0002: 58 58                                           XX
+
+Timestamp: 2020-01-27 16:57:42, Length: 23 (17), CRC: 78 14
+Direction: IN FROM SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 17 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 74 74 73 76 5C 58 59 57 5A 4C 78 14    E.wttsv\XYWZLx.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 15 00 07 31 2E JPC492227A....1.
+0001: 37 2E 36 2E 38                                  7.6.8
+==>
+Identify reply received from server
+
+Timestamp: 2020-01-27 16:57:42, Length: 23 (17), CRC: 78 14
+Direction: OUT TO INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 17 01 19 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 74 74 73 76 5C 58 59 57 5A 4C 78 14    E.wttsv\XYWZLx.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 15 00 07 31 2E JPC492227A....1.
+0001: 37 2E 36 2E 38                                  7.6.8
+
+Timestamp: 2020-01-27 16:57:42, Length: 311 (137), CRC: 00 8D
+Direction: IN FROM INVERTER, Type: DATA
+0000: 00 02 00 05 01 37 01 04 0D 22 2C 43 58 46 46 75 .....7...",CXFFu
+0001: 45 2E 46 37 2E 33 7F 40 5E 46 23 43 60 46 69 7F E.F7.3@^F#C`Fi
+0002: 4F 73 77 74 47 72 43 77 60 74 74 47 97 69 FD 61 OswtGrCw`ttGiýa
+0003: 74 74 47 72 09 71 F5 74 74 47 72 6F 08 61 74 74 ttGr.qõttGro.att
+0004: 8B 61 E8 7F 8A 74 74 47 72 6F AC 61 74 74 47 72 aèttGro¬attGr
+0005: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 79 77 owattGrowattGryw
+0006: 61 E9 F1 45 36 CC 34 60 7F 74 47 72 6F 77 61 74 aéñE6Ì4`tGrowat
+0007: 74 47 72 6F 77 61 74 74 47 73 21 7A 9E 74 74 47 tGrowattGs!zttG
+0008: 72 6F 5A 61 2D 3A 67 72 6F 77 61 74 74 47 78 6F roZa-:growattGxo
+0009: 77 2C F7 74 47 72 64 77 61 24 B0 47 72 F1 30 61 w,÷tGrdwa$°Grñ0a
+0010: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0011: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0012: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 owattGrowattGrow
+0013: 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 attGrowattGrowat
+0014: 2E 47 F4 6F 6E 72 7C 73 4D 71 75 77 61 74 6D 54 .Gôonr|sMquwatmT
+0015: 7A 68 7E 4C 40 74 47 72 76 64 67 61 7D 52 70 6F zh~L@tGrvdga}Rpo
+0016: 5B 61 6D 65 46 73 6F 77 6F 74 74 47 72 7E 76 60 [ameFsowottGr~v`
+0017: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0018: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0019: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 00 8D    owattGrowattG.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 31 56 5A 47 38 32 JPC492227A1VZG82
+0001: 31 31 42 37 14 01 1B 10 38 12 03 00 00 00 2C 00 11B7....8.....,.
+0002: 01 00 00 00 E5 06 8A 00 00 00 00 00 66 06 94 00 ....å......f..
+0003: 00 00 00 00 7F 00 00 00 CC 13 87 08 EB 00 00 00 .......Ì..ë...
+0004: 00 00 DB 00 00 00 00 00 00 00 00 00 00 00 00 00 ..Û.............
+0005: 00 00 00 00 00 00 16 00 00 9D 85 02 44 A3 43 01 ..........D£C.
+0006: 0B 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0007: 00 01 4E 0D FF 00 00 00 00 00 2D 00 59 4E 20 00 ..N.ÿ.....-.YN .
+0008: 00 00 00 00 00 00 0A 00 00 4D 83 00 00 00 0B 00 .........M.....
+0009: 00 50 C4 00 00 9E 47 00 00 00 00 00 00 00 00 00 .PÄ..G.........
+0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0011: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0012: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0013: 00 00 00 00 00 00 00 00 5A 00 86 00 19 13 08 07 ........Z......
+0014: 0A 03 1A 00 00 00 19 13 08 07 09 2D 34 00 00 00 ...........-4...
+0015: 19 13 06 15 09 15 02 00 2C 00 19 11 01 01 00 00 ........,.......
+0016: 0E 00 00 00 00 11 01 01 00 00 00 00 00 00 00 00 ................
+0017: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0018: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0019: 00 00 00 00 00                                  .....
+==>
+Received data
+==>
+Telegram data:
+datalogger : JPC492227A
+inverter : 1VZG8211B7
+datetime : 27-1-2020 16:57:45
+InvStat : 1
+Ppv : 22,9
+Vpv1 : 167,4
+Ipv1 : 0
+Ppv1 : 10,2
+Vpv2 : 168,4
+Ipv2 : 0
+Ppv2 : 12,7
+Pac : 20,4
+Fac : 49,99
+VacR : 228,3
+IacR : 0
+PacR : 21,9
+VacS : 0
+IacS : 0
+PacS : 0
+VacT : 0
+IacT : 0
+PacT : 0
+EacToday : 2,2
+EacTotal : 4032,5
+Total : 4179,5
+Temp : 26,7
+ISOFault : 0
+GFCIFault : 0
+DCIFault : 0
+VpvFault : 0
+VacFault : 0
+FacFault : 0
+TempFault : 0
+Faultcode : 0
+IPMTemp : 33,4
+Pbusvolt : 358,3
+Nbusvolt : 0
+Unknown1 : 45
+Unknown2 : 20000
+Unknown3 : 0
+Epv1Today : 1
+Epv1Total : 1984,3
+Epv2Today : 1,1
+Epv2Total : 2067,6
+EpvTotal : 4051,9
+Rac : 0
+ERacToday : 0
+ERacTotal : 0
+
+Timestamp: 2020-01-27 16:57:45, Length: 311 (137), CRC: 00 8D
+Direction: OUT TO SERVER, Type: DATA
+0000: 00 02 00 05 01 37 01 04 0D 22 2C 43 58 46 46 75 .....7...",CXFFu
+0001: 45 2E 46 37 2E 33 7F 40 5E 46 23 43 60 46 69 7F E.F7.3@^F#C`Fi
+0002: 4F 73 77 74 47 72 43 77 60 74 74 47 97 69 FD 61 OswtGrCw`ttGiýa
+0003: 74 74 47 72 09 71 F5 74 74 47 72 6F 08 61 74 74 ttGr.qõttGro.att
+0004: 8B 61 E8 7F 8A 74 74 47 72 6F AC 61 74 74 47 72 aèttGro¬attGr
+0005: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 79 77 owattGrowattGryw
+0006: 61 E9 F1 45 36 CC 34 60 7F 74 47 72 6F 77 61 74 aéñE6Ì4`tGrowat
+0007: 74 47 72 6F 77 61 74 74 47 73 21 7A 9E 74 74 47 tGrowattGs!zttG
+0008: 72 6F 5A 61 2D 3A 67 72 6F 77 61 74 74 47 78 6F roZa-:growattGxo
+0009: 77 2C F7 74 47 72 64 77 61 24 B0 47 72 F1 30 61 w,÷tGrdwa$°Grñ0a
+0010: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0011: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0012: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 owattGrowattGrow
+0013: 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 attGrowattGrowat
+0014: 2E 47 F4 6F 6E 72 7C 73 4D 71 75 77 61 74 6D 54 .Gôonr|sMquwatmT
+0015: 7A 68 7E 4C 40 74 47 72 76 64 67 61 7D 52 70 6F zh~L@tGrvdga}Rpo
+0016: 5B 61 6D 65 46 73 6F 77 6F 74 74 47 72 7E 76 60 [ameFsowottGr~v`
+0017: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0018: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0019: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 00 8D    owattGrowattG.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 31 56 5A 47 38 32 JPC492227A1VZG82
+0001: 31 31 42 37 14 01 1B 10 38 12 03 00 00 00 2C 00 11B7....8.....,.
+0002: 01 00 00 00 E5 06 8A 00 00 00 00 00 66 06 94 00 ....å......f..
+0003: 00 00 00 00 7F 00 00 00 CC 13 87 08 EB 00 00 00 .......Ì..ë...
+0004: 00 00 DB 00 00 00 00 00 00 00 00 00 00 00 00 00 ..Û.............
+0005: 00 00 00 00 00 00 16 00 00 9D 85 02 44 A3 43 01 ..........D£C.
+0006: 0B 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0007: 00 01 4E 0D FF 00 00 00 00 00 2D 00 59 4E 20 00 ..N.ÿ.....-.YN .
+0008: 00 00 00 00 00 00 0A 00 00 4D 83 00 00 00 0B 00 .........M.....
+0009: 00 50 C4 00 00 9E 47 00 00 00 00 00 00 00 00 00 .PÄ..G.........
+0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0011: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0012: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0013: 00 00 00 00 00 00 00 00 5A 00 86 00 19 13 08 07 ........Z......
+0014: 0A 03 1A 00 00 00 19 13 08 07 09 2D 34 00 00 00 ...........-4...
+0015: 19 13 06 15 09 15 02 00 2C 00 19 11 01 01 00 00 ........,.......
+0016: 0E 00 00 00 00 11 01 01 00 00 00 00 00 00 00 00 ................
+0017: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0018: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0019: 00 00 00 00 00                                  .....
+
+Timestamp: 2020-01-27 16:57:45, Length: 35 (23), CRC: E1 F8
+Direction: IN FROM SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 23 01 19 0D 22 2C 43 58 46 46 75 .....#...",CXFFu
+0001: 45 2E 77 7E 74 67 75 42 5E 40 4C 44 43 6A 42 5E E.w~tguB^@LDCjB^
+0002: 57 53 47 4E 72 4B 55 42 58 E1 F8                WSGNrKUBXáø
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 1F 00 13 32 30 JPC492227A....20
+0001: 31 37 2D 30 37 2D 30 31 20 32 33 3A 35 39 3A 35 17-07-01 23:59:5
+0002: 39                                              9
+==>
+Identify reply received from server
+
+Timestamp: 2020-01-27 16:57:45, Length: 35 (23), CRC: E1 F8
+Direction: OUT TO INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 23 01 19 0D 22 2C 43 58 46 46 75 .....#...",CXFFu
+0001: 45 2E 77 7E 74 67 75 42 5E 40 4C 44 43 6A 42 5E E.w~tguB^@LDCjB^
+0002: 57 53 47 4E 72 4B 55 42 58 E1 F8                WSGNrKUBXáø
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 1F 00 13 32 30 JPC492227A....20
+0001: 31 37 2D 30 37 2D 30 31 20 32 33 3A 35 39 3A 35 17-07-01 23:59:5
+0002: 39                                              9
+
+Timestamp: 2020-01-27 16:57:45, Length: 35 (23), CRC: E1 F8
+Direction: IN FROM INVERTER, Type: IDENTIFY
+0000: 00 01 00 05 00 23 01 19 0D 22 2C 43 58 46 46 75 .....#...",CXFFu
+0001: 45 2E 77 7E 74 67 75 42 5E 40 4C 44 43 6A 42 5E E.w~tguB^@LDCjB^
+0002: 57 53 47 4E 72 4B 55 42 58 E1 F8                WSGNrKUBXáø
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 1F 00 13 32 30 JPC492227A....20
+0001: 31 37 2D 30 37 2D 30 31 20 32 33 3A 35 39 3A 35 17-07-01 23:59:5
+0002: 39                                              9
+==>
+Inverter says: Date(0x1F): 2017-07-01 23:59:59
+
+Timestamp: 2020-01-27 16:57:45, Length: 35 (23), CRC: E1 F8
+Direction: OUT TO SERVER, Type: IDENTIFY
+0000: 00 01 00 05 00 23 01 19 0D 22 2C 43 58 46 46 75 .....#...",CXFFu
+0001: 45 2E 77 7E 74 67 75 42 5E 40 4C 44 43 6A 42 5E E.w~tguB^@LDCjB^
+0002: 57 53 47 4E 72 4B 55 42 58 E1 F8                WSGNrKUBXáø
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 1F 00 13 32 30 JPC492227A....20
+0001: 31 37 2D 30 37 2D 30 31 20 32 33 3A 35 39 3A 35 17-07-01 23:59:5
+0002: 39                                              9
+
+Timestamp: 2020-01-27 16:57:45, Length: 3 (03), CRC: 0A 98
+Direction: IN FROM SERVER, Type: DATA
+0000: 00 02 00 05 00 03 01 04 47 0A 98                ........G.
+PAYLOAD
+0000: 00                                              .
+
+Timestamp: 2020-01-27 16:57:45, Length: 3 (03), CRC: 0A 98
+Direction: OUT TO INVERTER, Type: DATA
+0000: 00 02 00 05 00 03 01 04 47 0A 98                ........G.
+PAYLOAD
+0000: 00                                              .
+
+Timestamp: 2020-01-27 16:58:45, Length: 311 (137), CRC: E3 3C
+Direction: IN FROM INVERTER, Type: DATA
+0000: 00 03 00 05 01 37 01 04 0D 22 2C 43 58 46 46 75 .....7...",CXFFu
+0001: 45 2E 46 37 2E 33 7F 40 5E 46 23 43 60 46 69 7F E.F7.3@^F#C`Fi
+0002: 4E 46 77 74 47 72 43 77 60 74 74 47 D1 6A E2 61 NFwtGrCw`ttGÑjâa
+0003: 74 74 47 72 26 71 7B 74 74 47 72 6F 2D 61 74 74 ttGr&q{ttGro-att
+0004: D2 61 E6 7F 89 74 74 47 72 6F D3 61 74 74 47 72 ÒaættGroÓattGr
+0005: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 79 77 owattGrowattGryw
+0006: 61 E9 F1 45 36 CC 9F 60 7E 74 47 72 6F 77 61 74 aéñE6Ì`~tGrowat
+0007: 74 47 72 6F 77 61 74 74 47 73 21 79 63 74 74 47 tGrowattGs!ycttG
+0008: 72 6F 5A 61 2D 3A 67 72 6F 77 61 74 74 47 78 6F roZa-:growattGxo
+0009: 77 2C F7 74 47 72 64 77 61 24 B0 47 72 F1 30 61 w,÷tGrdwa$°Grñ0a
+0010: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0011: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0012: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 owattGrowattGrow
+0013: 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 attGrowattGrowat
+0014: 2E 47 F4 6F 6E 72 7C 73 4D 71 75 77 61 74 6D 54 .Gôonr|sMquwatmT
+0015: 7A 68 7E 4C 40 74 47 72 76 64 67 61 7D 52 70 6F zh~L@tGrvdga}Rpo
+0016: 5B 61 6D 65 46 73 6F 77 6F 74 74 47 72 7E 76 60 [ameFsowottGr~v`
+0017: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0018: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0019: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 E3 3C    owattGrowattGã<
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 31 56 5A 47 38 32 JPC492227A1VZG82
+0001: 31 31 42 37 14 01 1B 10 39 27 03 00 00 00 2C 00 11B7....9'....,.
+0002: 01 00 00 00 A3 05 95 00 00 00 00 00 49 06 1A 00 ....£......I...
+0003: 00 00 00 00 5A 00 00 00 95 13 89 08 E8 00 00 00 ....Z.....è...
+0004: 00 00 A4 00 00 00 00 00 00 00 00 00 00 00 00 00 ..¤.............
+0005: 00 00 00 00 00 00 16 00 00 9D 85 02 44 A3 E8 01 ..........D£è.
+0006: 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0007: 00 01 4E 0E 02 00 00 00 00 00 2D 00 59 4E 20 00 ..N.......-.YN .
+0008: 00 00 00 00 00 00 0A 00 00 4D 83 00 00 00 0B 00 .........M.....
+0009: 00 50 C4 00 00 9E 47 00 00 00 00 00 00 00 00 00 .PÄ..G.........
+0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0011: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0012: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0013: 00 00 00 00 00 00 00 00 5A 00 86 00 19 13 08 07 ........Z......
+0014: 0A 03 1A 00 00 00 19 13 08 07 09 2D 34 00 00 00 ...........-4...
+0015: 19 13 06 15 09 15 02 00 2C 00 19 11 01 01 00 00 ........,.......
+0016: 0E 00 00 00 00 11 01 01 00 00 00 00 00 00 00 00 ................
+0017: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0018: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0019: 00 00 00 00 00                                  .....
+==>
+Received data
+==>
+Telegram data:
+datalogger : JPC492227A
+inverter : 1VZG8211B7
+datetime : 27-1-2020 16:58:45
+InvStat : 1
+Ppv : 16,3
+Vpv1 : 142,9
+Ipv1 : 0
+Ppv1 : 7,3
+Vpv2 : 156,2
+Ipv2 : 0
+Ppv2 : 9
+Pac : 14,9
+Fac : 50,01
+VacR : 228
+IacR : 0
+PacR : 16,4
+VacS : 0
+IacS : 0
+PacS : 0
+VacT : 0
+IacT : 0
+PacT : 0
+EacToday : 2,2
+EacTotal : 4032,5
+Total : 4196
+Temp : 26,6
+ISOFault : 0
+GFCIFault : 0
+DCIFault : 0
+VpvFault : 0
+VacFault : 0
+FacFault : 0
+TempFault : 0
+Faultcode : 0
+IPMTemp : 33,4
+Pbusvolt : 358,6
+Nbusvolt : 0
+Unknown1 : 45
+Unknown2 : 20000
+Unknown3 : 0
+Epv1Today : 1
+Epv1Total : 1984,3
+Epv2Today : 1,1
+Epv2Total : 2067,6
+EpvTotal : 4051,9
+Rac : 0
+ERacToday : 0
+ERacTotal : 0
+
+Timestamp: 2020-01-27 16:58:45, Length: 311 (137), CRC: E3 3C
+Direction: OUT TO SERVER, Type: DATA
+0000: 00 03 00 05 01 37 01 04 0D 22 2C 43 58 46 46 75 .....7...",CXFFu
+0001: 45 2E 46 37 2E 33 7F 40 5E 46 23 43 60 46 69 7F E.F7.3@^F#C`Fi
+0002: 4E 46 77 74 47 72 43 77 60 74 74 47 D1 6A E2 61 NFwtGrCw`ttGÑjâa
+0003: 74 74 47 72 26 71 7B 74 74 47 72 6F 2D 61 74 74 ttGr&q{ttGro-att
+0004: D2 61 E6 7F 89 74 74 47 72 6F D3 61 74 74 47 72 ÒaættGroÓattGr
+0005: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 79 77 owattGrowattGryw
+0006: 61 E9 F1 45 36 CC 9F 60 7E 74 47 72 6F 77 61 74 aéñE6Ì`~tGrowat
+0007: 74 47 72 6F 77 61 74 74 47 73 21 79 63 74 74 47 tGrowattGs!ycttG
+0008: 72 6F 5A 61 2D 3A 67 72 6F 77 61 74 74 47 78 6F roZa-:growattGxo
+0009: 77 2C F7 74 47 72 64 77 61 24 B0 47 72 F1 30 61 w,÷tGrdwa$°Grñ0a
+0010: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0011: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0012: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 owattGrowattGrow
+0013: 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 attGrowattGrowat
+0014: 2E 47 F4 6F 6E 72 7C 73 4D 71 75 77 61 74 6D 54 .Gôonr|sMquwatmT
+0015: 7A 68 7E 4C 40 74 47 72 76 64 67 61 7D 52 70 6F zh~L@tGrvdga}Rpo
+0016: 5B 61 6D 65 46 73 6F 77 6F 74 74 47 72 7E 76 60 [ameFsowottGr~v`
+0017: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0018: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0019: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 E3 3C    owattGrowattGã<
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 31 56 5A 47 38 32 JPC492227A1VZG82
+0001: 31 31 42 37 14 01 1B 10 39 27 03 00 00 00 2C 00 11B7....9'....,.
+0002: 01 00 00 00 A3 05 95 00 00 00 00 00 49 06 1A 00 ....£......I...
+0003: 00 00 00 00 5A 00 00 00 95 13 89 08 E8 00 00 00 ....Z.....è...
+0004: 00 00 A4 00 00 00 00 00 00 00 00 00 00 00 00 00 ..¤.............
+0005: 00 00 00 00 00 00 16 00 00 9D 85 02 44 A3 E8 01 ..........D£è.
+0006: 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0007: 00 01 4E 0E 02 00 00 00 00 00 2D 00 59 4E 20 00 ..N.......-.YN .
+0008: 00 00 00 00 00 00 0A 00 00 4D 83 00 00 00 0B 00 .........M.....
+0009: 00 50 C4 00 00 9E 47 00 00 00 00 00 00 00 00 00 .PÄ..G.........
+0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0011: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0012: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0013: 00 00 00 00 00 00 00 00 5A 00 86 00 19 13 08 07 ........Z......
+0014: 0A 03 1A 00 00 00 19 13 08 07 09 2D 34 00 00 00 ...........-4...
+0015: 19 13 06 15 09 15 02 00 2C 00 19 11 01 01 00 00 ........,.......
+0016: 0E 00 00 00 00 11 01 01 00 00 00 00 00 00 00 00 ................
+0017: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0018: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0019: 00 00 00 00 00                                  .....
+
+Timestamp: 2020-01-27 16:58:45, Length: 35 (23), CRC: C7 BF
+Direction: IN FROM SERVER, Type: CONFIG
+0000: 00 01 00 05 00 23 01 18 0D 22 2C 43 58 46 46 75 .....#...",CXFFu
+0001: 45 2E 77 7E 74 67 75 42 5D 47 4C 44 45 6A 40 58 E.w~tguB]GLDEj@X
+0002: 57 50 42 4E 72 45 55 43 54 C7 BF                WPBNrEUCTÇ¿
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 1F 00 13 32 30 JPC492227A....20
+0001: 32 30 2D 30 31 2D 32 37 20 31 36 3A 35 37 3A 34 20-01-27 16:57:4
+0002: 35                                              5
+==>
+Configuration received: Date(0x1F): 2020-01-27 16:57:45
+
+Timestamp: 2020-01-27 16:58:45, Length: 35 (23), CRC: C7 BF
+Direction: OUT TO INVERTER, Type: CONFIG
+0000: 00 01 00 05 00 23 01 18 0D 22 2C 43 58 46 46 75 .....#...",CXFFu
+0001: 45 2E 77 7E 74 67 75 42 5D 47 4C 44 45 6A 40 58 E.w~tguB]GLDEj@X
+0002: 57 50 42 4E 72 45 55 43 54 C7 BF                WPBNrEUCTÇ¿
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 1F 00 13 32 30 JPC492227A....20
+0001: 32 30 2D 30 31 2D 32 37 20 31 36 3A 35 37 3A 34 20-01-27 16:57:4
+0002: 35                                              5
+
+Timestamp: 2020-01-27 16:58:49, Length: 311 (137), CRC: AD 1E
+Direction: IN FROM INVERTER, Type: DATA2
+0000: 00 02 00 05 01 37 01 50 0D 22 2C 43 58 46 46 75 .....7.P.",CXFFu
+0001: 45 2E 46 37 2E 33 7F 40 5E 46 23 43 60 46 78 64 E.F7.3@^F#C`Fxd
+0002: 55 52 77 74 47 72 43 77 60 74 74 49 65 69 DC 61 URwtGrCw`ttIeiÜa
+0003: 7E 74 47 74 A1 70 68 74 7E 47 72 68 3E 61 74 79 ~tGt¡pht~Grh>aty
+0004: 97 61 E5 7E 66 74 7B 47 72 62 A8 61 74 74 47 72 aå~ft{Grb¨attGr
+0005: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 6B 77 owattGrowattGrkw
+0006: 61 EF A3 45 46 87 0A 60 78 74 47 72 6F 77 61 74 aï£EF.`xtGrowat
+0007: 74 47 72 6F 77 61 74 74 47 73 2B 79 60 74 74 47 tGrowattGs+y`ttG
+0008: 72 6F 5A 61 2D 3A 67 72 6F 77 61 74 74 47 70 6F roZa-:growattGpo
+0009: 77 2D C2 74 47 72 6D 77 61 3B 9F 47 72 F3 D6 61 w-ÂtGrmwa;GróÖa
+0010: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0011: 4C 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 LrowattGrowattGr
+0012: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 owattGrowattGrow
+0013: 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 attGrowattGrowat
+0014: 2E 47 F4 6F 6E 72 7C 73 4D 71 75 77 61 74 6D 54 .Gôonr|sMquwatmT
+0015: 7A 68 7E 4C 40 74 47 72 76 64 67 61 7D 52 70 6F zh~L@tGrvdga}Rpo
+0016: 5B 61 6D 65 46 73 6F 77 6F 74 74 47 72 7E 76 60 [ameFsowottGr~v`
+0017: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0018: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0019: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 AD 1E    owattGrowattG­.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 31 56 5A 47 38 32 JPC492227A1VZG82
+0001: 31 31 42 37 14 01 0A 0B 22 33 03 00 00 00 2C 00 11B7...."3....,.
+0002: 01 00 00 0E 17 06 AB 00 0A 00 00 06 CE 07 09 00 ......«.....Î...
+0003: 0A 00 00 07 49 00 00 0D D0 13 8A 09 07 00 0F 00 ....I...Ð......
+0004: 00 0D DF 00 00 00 00 00 00 00 00 00 00 00 00 00 ..ß.............
+0005: 00 00 00 00 00 00 04 00 00 9B D7 02 34 E8 7D 01 ..........4è}.
+0006: 0C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0007: 00 01 44 0E 01 00 00 00 00 00 2D 00 59 4E 20 00 ..D.......-.YN .
+0008: 00 00 00 00 00 00 02 00 00 4C B6 00 00 00 02 00 .........L¶.....
+0009: 00 4F EB 00 00 9C A1 00 00 00 00 00 00 00 00 00 .Oë..¡.........
+0010: 00 00 00 00 00 00 00 00 0B 00 00 00 00 00 00 00 ................
+0011: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0012: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0013: 00 00 00 00 00 00 00 00 5A 00 86 00 19 13 08 07 ........Z......
+0014: 0A 03 1A 00 00 00 19 13 08 07 09 2D 34 00 00 00 ...........-4...
+0015: 19 13 06 15 09 15 02 00 2C 00 19 11 01 01 00 00 ........,.......
+0016: 0E 00 00 00 00 11 01 01 00 00 00 00 00 00 00 00 ................
+0017: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0018: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0019: 00 00 00 00 00                                  .....
+==>
+Received data 150
+==>
+Telegram data:
+datalogger : JPC492227A
+inverter : 1VZG8211B7
+datetime : 27-1-2020 16:58:49
+InvStat : 1
+Ppv : 360,7
+Vpv1 : 170,7
+Ipv1 : 1
+Ppv1 : 174,2
+Vpv2 : 180,1
+Ipv2 : 1
+Ppv2 : 186,5
+Pac : 353,6
+Fac : 50,02
+VacR : 231,1
+IacR : 1,5
+PacR : 355,1
+VacS : 0
+IacS : 0
+PacS : 0
+VacT : 0
+IacT : 0
+PacT : 0
+EacToday : 0,4
+EacTotal : 3989,5
+Total : 5951,7
+Temp : 26,8
+ISOFault : 0
+GFCIFault : 0
+DCIFault : 0
+VpvFault : 0
+VacFault : 0
+FacFault : 0
+TempFault : 0
+Faultcode : 0
+IPMTemp : 32,4
+Pbusvolt : 358,5
+Nbusvolt : 0
+Unknown1 : 45
+Unknown2 : 20000
+Unknown3 : 0
+Epv1Today : 0,2
+Epv1Total : 1963,8
+Epv2Today : 0,2
+Epv2Total : 2045,9
+EpvTotal : 4009,7
+Rac : 0
+ERacToday : 0
+ERacTotal : 0
+
+Timestamp: 2020-01-27 16:58:49, Length: 311 (137), CRC: AD 1E
+Direction: OUT TO SERVER, Type: DATA2
+0000: 00 02 00 05 01 37 01 50 0D 22 2C 43 58 46 46 75 .....7.P.",CXFFu
+0001: 45 2E 46 37 2E 33 7F 40 5E 46 23 43 60 46 78 64 E.F7.3@^F#C`Fxd
+0002: 55 52 77 74 47 72 43 77 60 74 74 49 65 69 DC 61 URwtGrCw`ttIeiÜa
+0003: 7E 74 47 74 A1 70 68 74 7E 47 72 68 3E 61 74 79 ~tGt¡pht~Grh>aty
+0004: 97 61 E5 7E 66 74 7B 47 72 62 A8 61 74 74 47 72 aå~ft{Grb¨attGr
+0005: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 6B 77 owattGrowattGrkw
+0006: 61 EF A3 45 46 87 0A 60 78 74 47 72 6F 77 61 74 aï£EF.`xtGrowat
+0007: 74 47 72 6F 77 61 74 74 47 73 2B 79 60 74 74 47 tGrowattGs+y`ttG
+0008: 72 6F 5A 61 2D 3A 67 72 6F 77 61 74 74 47 70 6F roZa-:growattGpo
+0009: 77 2D C2 74 47 72 6D 77 61 3B 9F 47 72 F3 D6 61 w-ÂtGrmwa;GróÖa
+0010: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0011: 4C 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 LrowattGrowattGr
+0012: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 owattGrowattGrow
+0013: 61 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 attGrowattGrowat
+0014: 2E 47 F4 6F 6E 72 7C 73 4D 71 75 77 61 74 6D 54 .Gôonr|sMquwatmT
+0015: 7A 68 7E 4C 40 74 47 72 76 64 67 61 7D 52 70 6F zh~L@tGrvdga}Rpo
+0016: 5B 61 6D 65 46 73 6F 77 6F 74 74 47 72 7E 76 60 [ameFsowottGr~v`
+0017: 74 74 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 ttGrowattGrowatt
+0018: 47 72 6F 77 61 74 74 47 72 6F 77 61 74 74 47 72 GrowattGrowattGr
+0019: 6F 77 61 74 74 47 72 6F 77 61 74 74 47 AD 1E    owattGrowattG­.
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 31 56 5A 47 38 32 JPC492227A1VZG82
+0001: 31 31 42 37 14 01 0A 0B 22 33 03 00 00 00 2C 00 11B7...."3....,.
+0002: 01 00 00 0E 17 06 AB 00 0A 00 00 06 CE 07 09 00 ......«.....Î...
+0003: 0A 00 00 07 49 00 00 0D D0 13 8A 09 07 00 0F 00 ....I...Ð......
+0004: 00 0D DF 00 00 00 00 00 00 00 00 00 00 00 00 00 ..ß.............
+0005: 00 00 00 00 00 00 04 00 00 9B D7 02 34 E8 7D 01 ..........4è}.
+0006: 0C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0007: 00 01 44 0E 01 00 00 00 00 00 2D 00 59 4E 20 00 ..D.......-.YN .
+0008: 00 00 00 00 00 00 02 00 00 4C B6 00 00 00 02 00 .........L¶.....
+0009: 00 4F EB 00 00 9C A1 00 00 00 00 00 00 00 00 00 .Oë..¡.........
+0010: 00 00 00 00 00 00 00 00 0B 00 00 00 00 00 00 00 ................
+0011: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0012: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0013: 00 00 00 00 00 00 00 00 5A 00 86 00 19 13 08 07 ........Z......
+0014: 0A 03 1A 00 00 00 19 13 08 07 09 2D 34 00 00 00 ...........-4...
+0015: 19 13 06 15 09 15 02 00 2C 00 19 11 01 01 00 00 ........,.......
+0016: 0E 00 00 00 00 11 01 01 00 00 00 00 00 00 00 00 ................
+0017: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0018: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0019: 00 00 00 00 00                                  .....
+
+Timestamp: 2020-01-27 16:58:49, Length: 3 (03), CRC: C6 59
+Direction: IN FROM SERVER, Type: DATA
+0000: 00 03 00 05 00 03 01 04 47 C6 59                ........GÆY
+PAYLOAD
+0000: 00                                              .
+
+Timestamp: 2020-01-27 16:58:49, Length: 3 (03), CRC: C6 59
+Direction: OUT TO INVERTER, Type: DATA
+0000: 00 03 00 05 00 03 01 04 47 C6 59                ........GÆY
+PAYLOAD
+0000: 00                                              .
+
+Timestamp: 2020-01-27 16:58:49, Length: 15 (0F), CRC: 97 C1
+Direction: IN FROM INVERTER, Type: CONFIG
+0000: 00 01 00 05 00 0F 01 18 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 7E 74 97 C1                            E.w~tÁ
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 1F 00          JPC492227A...
+==>
+Configuration ACK received
+
+Timestamp: 2020-01-27 16:59:01, Length: 15 (0F), CRC: 97 C1
+Direction: OUT TO SERVER, Type: CONFIG
+0000: 00 01 00 05 00 0F 01 18 0D 22 2C 43 58 46 46 75 .........",CXFFu
+0001: 45 2E 77 7E 74 97 C1                            E.w~tÁ
+PAYLOAD
+0000: 4A 50 43 34 39 32 32 32 37 41 00 1F 00          JPC492227A...
+
+Timestamp: 2020-01-27 16:59:01, Length: 3 (03), CRC: CA A6
+Direction: IN FROM SERVER, Type: DATA2
+0000: 00 02 00 05 00 03 01 50 47 CA A6                .......PGÊ¦
+PAYLOAD
+0000: 00                                              .
+
+Timestamp: 2020-01-27 16:59:01, Length: 3 (03), CRC: CA A6
+Direction: OUT TO INVERTER, Type: DATA2
+0000: 00 02 00 05 00 03 01 50 47 CA A6                .......PGÊ¦
+PAYLOAD
+0000: 00                                              .

@@ -19,7 +19,7 @@ namespace GrowattMonitorShared
 
     public class Program
     {
-        private static string ipAddress = "192.168.1.103";
+        private static readonly string ipAddress = "192.168.1.99";
 
         private static readonly byte[] PING = new byte[] {
                 0x00, 0xA8, 0x00, 0x05, 0x00, 0x0C, 0x01, 0x16, 0x0D, 0x22, 0x2C, 0x43, 0x58, 0x46, 0x46, 0x75, 0x45, 0x2E, 0x79, 0xC6
@@ -275,7 +275,7 @@ namespace GrowattMonitorShared
                         .Concat(BitConverter.GetBytes((ushort)data["first"]))
                         .Concat(BitConverter.GetBytes((ushort)data["last"])).ToArray();
 
-                    var ack = Message.Create(5, MessageType.IDENTIFY, reply);
+                    var ack = Message.Create(MessageType.IDENTIFY, reply);
 
                     stream.Write(reply, 0, reply.Length);
 
@@ -301,7 +301,7 @@ namespace GrowattMonitorShared
                         .Concat(new byte[] { 0x00 })
                         .Concat((byte[])data["last"]).ToArray();
 
-                    var ack = Message.Create(5, MessageType.IDENTIFY, reply);
+                    var ack = Message.Create(MessageType.IDENTIFY, reply);
                     stream.Write(reply, 0, reply.Length);
 
                     SendConfig();
@@ -322,7 +322,7 @@ namespace GrowattMonitorShared
 
                 msg.Dump("IN");
 
-                msg.Inverter = null;
+                //msg.Inverter = null;
                 Message reply = null;
 
                 if (msg != null)
@@ -390,7 +390,7 @@ namespace GrowattMonitorShared
 
                         _state = InverterState.ANNOUNCE_RCVD;
 
-                        reply = Message.CreateFromByteBuffer(DATA);
+                        //reply = Message.CreateFromByteBuffer(DATA);
                     }
                     else
                     {
