@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GrowattMonitorShared
 {
-    public class Config
+    public class DataloggerConfig
     {
         public string Index { get; set; }
         public object Value { get; set; }
@@ -17,7 +17,7 @@ namespace GrowattMonitorShared
             }
         }
 
-        public Config(string index, object value)
+        public DataloggerConfig(string index, object value)
         {
             Index = index;
             Value = value;
@@ -25,7 +25,7 @@ namespace GrowattMonitorShared
 
         public string Display()
         {
-            return LookupDescription() +"(" + Index + "): " + Encoding.Default.GetString((byte[])Value);
+            return Index + " - " + LookupDescription()+ ": " + Encoding.Default.GetString((byte[])Value);
         }
 
         private string LookupDescription()
@@ -102,9 +102,9 @@ namespace GrowattMonitorShared
             }
         }
 
-        public static List<Config> CreateFromTLV(byte[] msg)
+        public static List<DataloggerConfig> CreateFromTLV(byte[] msg)
         {
-            var cfg = new List<Config>();
+            var cfg = new List<DataloggerConfig>();
 
             
             //$data = unpack("C4/nsize/C4type/a10serial/a10ident/a10ident2/C*", $msg);
@@ -120,7 +120,7 @@ namespace GrowattMonitorShared
                 int length = BitConverter.ToInt16(msg[2..4].ReverseWhenLittleEndian());
                 var value = msg[4..length];
 
-                cfg.Add(new Config(configid, value));
+                cfg.Add(new DataloggerConfig(configid, value));
 
                 msg = msg[(length+4)..^0];
             }

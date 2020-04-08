@@ -42,6 +42,7 @@ namespace GrowattMonitorShared
 
         public static bool IsDaylight(double latitude, double longitude)
         {
+            //return true;
             // riseTime and setTime already calculated, so now is in daylight range
             if (riseTime > DateTime.MinValue && setTime > DateTime.MinValue)
                 return true;
@@ -62,7 +63,7 @@ namespace GrowattMonitorShared
             Console.WriteLine($"Today is {DateTime.Now.Date:dd-MM-yyyy}, sunrise @ {riseTime:HH:mm:ss}, sunset @ {setTime:HH:mm:ss}");
 
             // account for calculation discrepancies
-            setTime = setTime.AddMinutes(15);                
+            setTime = setTime.AddMinutes(25);                
 
             if (currentTime >= riseTime && currentTime <= setTime)
                 return true;

@@ -16,16 +16,19 @@ namespace GrowattMonitor
     {
         private readonly ILogger<GrowattWorker> _logger;
         private readonly InverterMonitor _monitor;
-        public readonly ConfigSettings _config;
+
+        private readonly HistoryRewriter _history;
+        public readonly AppConfig _config;
         private CosmosClient _cosmosClient;
         private CosmosContainer _cosmosContainer;
 
         public DateTime _riseTime=DateTime.MinValue, _setTime =DateTime.MinValue;
 
-        public GrowattWorker(ILogger<GrowattWorker> logger, InverterMonitor monitor, IOptions<ConfigSettings> config)
+        public GrowattWorker(ILogger<GrowattWorker> logger, InverterMonitor monitor, HistoryRewriter history, IOptions<AppConfig> config)
         {
             _logger = logger;
             _monitor = monitor;
+            _history = history;
             _config = config.Value;
         }
 
@@ -63,6 +66,11 @@ namespace GrowattMonitor
                 _logger.LogInformation("Worker executing at: {time}", DateTimeOffset.Now);
 
                 Console.OutputEncoding = Encoding.Default;
+
+                if (_config.Ids != null)
+                {
+                    _history.Run(_cosmosContainer);
+                }
 
                 if (Utils.IsDaylight(_config.Latitude, _config.Longitude))
                     _monitor.Run(_cosmosContainer);

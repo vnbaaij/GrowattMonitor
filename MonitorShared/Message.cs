@@ -240,7 +240,7 @@ namespace GrowattMonitorShared
         }
 
 
-        private Config DecodeConfig()
+        private DataloggerConfig DecodeConfig()
         {
             //2id/2version/2length/2type/10datalogger/nconfigid/0
 
@@ -251,13 +251,13 @@ namespace GrowattMonitorShared
                 ushort size = BitConverter.ToUInt16(Content[20..22].ReverseWhenLittleEndian());
                 var value = Content[22..(22 + size)];
 
-                return new Config(configid, value);
+                return new DataloggerConfig(configid, value);
             }
             else
-                return new Config(configid, 0);
+                return new DataloggerConfig(configid, 0);
         }
 
-        public Config DecodeIdentifyDetail()
+        public DataloggerConfig DecodeIdentifyDetail()
         {
             //2id/2version/2length/2type/nconfigid/nsize
             ushort size = BitConverter.ToUInt16(Content[20..22].ReverseWhenLittleEndian());
@@ -269,7 +269,7 @@ namespace GrowattMonitorShared
 
             var value = Content[22..endindex];
 
-            return new Config(configid, value); ;
+            return new DataloggerConfig(configid, value); ;
         }
 
         public Dictionary<string, object> DecodeIdentifyRequest()

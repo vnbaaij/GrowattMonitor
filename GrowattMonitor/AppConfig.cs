@@ -11,7 +11,7 @@ namespace GrowattMonitor.Configuration
         public string Container { get; set; }
     }
 
-    public class ConfigSettings
+    public class AppConfig
     {
         public string DataloggerReceiverAddress { get; set; }
         public string GrowattServerAddress { get; set; }
@@ -25,6 +25,8 @@ namespace GrowattMonitor.Configuration
 
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+
+        public string[] Ids { get; set; } = null;
     }
 }
 

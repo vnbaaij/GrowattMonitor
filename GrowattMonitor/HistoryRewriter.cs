@@ -18,9 +18,9 @@ using Microsoft.Extensions.Options;
 
 namespace GrowattMonitor
 {
-    public class InverterMonitor
+    public class HistoryRewriter
     {
-        private readonly ILogger<InverterMonitor> _logger;
+        private readonly ILogger<HistoryRewriter> _logger;
         public readonly AppConfig _appConfig;
         private CosmosContainer _cosmosContainer;
 
@@ -36,7 +36,7 @@ namespace GrowattMonitor
         public List<DataloggerConfig> Config { get; set; } = new List<DataloggerConfig>();
 
 
-        public InverterMonitor(ILogger<InverterMonitor> logger, IOptions<AppConfig> appConfig)
+        public HistoryRewriter(ILogger<HistoryRewriter> logger, IOptions<AppConfig> appConfig)
         {
             _logger = logger;
             _appConfig = appConfig.Value;
