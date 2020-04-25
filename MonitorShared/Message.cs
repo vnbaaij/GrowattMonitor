@@ -260,14 +260,14 @@ namespace GrowattMonitorShared
         public DataloggerConfig DecodeIdentifyDetail()
         {
             //2id/2version/2length/2type/nconfigid/nsize
-            ushort size = BitConverter.ToUInt16(Content[20..22].ReverseWhenLittleEndian());
+            ushort size = BitConverter.ToUInt16(Body[12..14].ReverseWhenLittleEndian());
 
-            var configid = "0x" + BitConverter.ToUInt16(Content[18..20].ReverseWhenLittleEndian()).ToString("X2");
-            int endindex = 22 + size;
-            if (endindex > Content.Length)
-                endindex = Content.Length;
+            var configid = "0x" + BitConverter.ToUInt16(Body[10..12].ReverseWhenLittleEndian()).ToString("X2");
+            int endindex = 14 + size;
+            if (endindex > Body.Length)
+                endindex = Body.Length;
 
-            var value = Content[22..endindex];
+            var value = Body[14..endindex];
 
             return new DataloggerConfig(configid, value); ;
         }

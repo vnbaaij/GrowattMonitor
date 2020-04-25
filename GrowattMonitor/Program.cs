@@ -8,7 +8,7 @@ namespace GrowattMonitor
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+             CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -19,7 +19,6 @@ namespace GrowattMonitor
 
                     services.Configure<AppConfig>(hostContext.Configuration.GetSection("Configuration"));
                     services.AddSingleton<InverterMonitor>();
-                    //services.AddSingleton<HistoryRewriter>();
                     services.AddHostedService<GrowattWorker>();
                 });
     }

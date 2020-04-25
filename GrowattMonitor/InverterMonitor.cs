@@ -27,6 +27,8 @@ namespace GrowattMonitor
         private static Socket _inverterSocket = null;
         private static Socket _serverSocket = null;
 
+        private static CancellationTokenSource cancellation = new CancellationTokenSource();
+
         private byte[] _datalogger;
         private bool _listenToInverter = true;
         private static bool _firstIdentify = true;
@@ -47,44 +49,47 @@ namespace GrowattMonitor
             _cosmosContainer = cosmosContainer;
 
             TcpListener listener = null;
-            try
+            IPAddress ip = IPAddress.Parse(_appConfig.DataloggerReceiverAddress);
+
+            cancellation.Token.Register(() => listener.Stop());
+
+            Console.WriteLine("Monitor started...");
+
+            // Start listening for client requests.
+            listener = new TcpListener(ip, 5279);
+            listener.Start();
+            
+
+
+            // Enter the listening loop.
+            while (Utils.IsDaylight(_appConfig.Latitude, _appConfig.Longitude))
             {
-                IPAddress ip = IPAddress.Parse(_appConfig.DataloggerReceiverAddress);
-
-                listener = new TcpListener(ip, 5279);
-
-                // Start listening for client requests.
-                listener.Start();
-                Console.WriteLine("Monitor started...");
-
-
-                // Enter the listening loop.
-                while (Utils.IsDaylight(_appConfig.Latitude, _appConfig.Longitude))
+                try
                 {
                     // Buffer for reading data
-                    byte[] bytes = ReceiveBytes(listener);
+                    byte[] bytes = ReceiveBytes(listener).Result;
                     // Handle data locally
                     ProcessBytes(bytes);
                 }
+                catch (Exception ex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(ex);
+                    Console.ResetColor();
+                }
             }
-            catch (SocketException e)
-            {
-                Console.WriteLine("SocketException: {0}", e);
-            }
-            finally
-            {
-                Console.WriteLine("Monitor stopped...");
+            Console.WriteLine("Monitor stopped...");
 
-                // Shutdown and end sockets
-                _inverterSocket?.Close();
-                _serverSocket?.Close();
+            // Shutdown and end sockets
+            _inverterSocket?.Close();
+            _serverSocket?.Close();
 
-                // Stop listening for new clients.
-                listener.Stop();
-            }
+            // Stop listening for new clients.
+            listener.Stop();
+
         }
 
-        private Socket ConnectSocket(Socket socket, string host, TcpListener listener = null)
+        private async Task<Socket> ConnectSocket(Socket socket, string host, TcpListener listener = null)
         {
             if (socket != null && socket.Connected)
                 // Everything is awesome!
@@ -93,42 +98,48 @@ namespace GrowattMonitor
             if (listener == null && !_appConfig.ActAsProxy)
                 return null;
 
+            if (listener != null)
+                Console.WriteLine($"==> Waiting for inverter to connect to proxy ({host})... ");
+            else
+                Console.WriteLine($"==> Waiting for proxy to connect tot server ({host})... ");
+
             try
             {
-                Console.Write($"\nConnecting to '{host}'... ");
                 if (socket == null)
+                {
                     socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    socket.NoDelay = true;
+                    //socket.ReceiveBufferSize = 4096;
+                    socket.ReceiveTimeout = 2500;
+                    socket.SendTimeout = 2500;
+                }
 
-                //LingerOption lingerOptions = new LingerOption(true, 60);
-                //socket.LingerState = lingerOptions;
-                //socket.NoDelay = true;
-                socket.ReceiveBufferSize = 2048;
-                socket.ReceiveTimeout = 10000;
-                socket.SendTimeout = 10000;
-                
                 if (!socket.Connected)
                     if (listener != null)
                     {
-                        socket = listener.AcceptSocket();
+                        socket = await listener.AcceptSocketAsync(cancellation.Token);
                     }
                     else
                         socket.Connect(host, 5279);
 
                 Console.WriteLine($"...connection established");
             }
-            catch (SocketException e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"SocketException: {e}");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex);
+                Console.ResetColor();
             }
 
             return socket;
         }
 
-        private byte[] ReceiveBytes(TcpListener listener)
+        private async Task<byte[]> ReceiveBytes(TcpListener listener)
         {
-            Socket s;
+            //Socket s;
             int i = 0;
 
+            /*
             if (_listenToInverter)
                 s = _inverterSocket = ConnectSocket(_inverterSocket, _appConfig.DataloggerReceiverAddress, listener);
             else 
@@ -139,12 +150,23 @@ namespace GrowattMonitor
                 _listenToInverter = true;
                 return null;
             }
+            */
 
-            byte[] bytes = new byte[2048];
+
+            if (_inverterSocket == null)
+                _inverterSocket = await ConnectSocket(_inverterSocket, _appConfig.DataloggerReceiverAddress, listener);
+            if (_serverSocket == null)
+                _serverSocket = await ConnectSocket(_serverSocket, _appConfig.GrowattServerAddress);
+
+            byte[] bytes = new byte[8192];
 
             try
             {
-                i = s.Receive(bytes);
+                //i = await await Task.WhenAny(_inverterSocket.ReceiveAsync(bytes, SocketFlags.None), _serverSocket.ReceiveAsync(bytes, SocketFlags.None));
+                if (_listenToInverter)
+                    i = _inverterSocket.Receive(bytes, SocketFlags.None);
+                else
+                    i = _serverSocket.Receive(bytes, SocketFlags.None);
             }
             catch (SocketException e)
             {
@@ -171,7 +193,7 @@ namespace GrowattMonitor
                 {
                     _listenToInverter = true;
                 }
-                
+
                 string source;
                 if (_listenToInverter)
                     source = "INVERTER";
@@ -199,13 +221,13 @@ namespace GrowattMonitor
         private void SendMessage(Message msg)
         {
             Socket s;
-            string dest;
+            //string dest;
             bool sendMessage = true;
 
             if (_listenToInverter)
             {
-                s = _serverSocket = ConnectSocket(_serverSocket, _appConfig.GrowattServerAddress);
-                dest = "SERVER";
+                s = _serverSocket = ConnectSocket(_serverSocket, _appConfig.GrowattServerAddress).Result;
+                //dest = "SERVER";
 
                 _listenToInverter = false;
 
@@ -213,8 +235,8 @@ namespace GrowattMonitor
             }
             else
             {
-               s = _inverterSocket = ConnectSocket(_inverterSocket, _appConfig.DataloggerReceiverAddress);
-                dest = "INVERTER";
+                s = _inverterSocket = ConnectSocket(_inverterSocket, _appConfig.DataloggerReceiverAddress).Result;
+                //dest = "INVERTER";
 
                 _listenToInverter = true;
             }
@@ -226,7 +248,7 @@ namespace GrowattMonitor
                 int i = s.Send(msg.Content);
 
                 //if (i > 0)
-                    //msg.Dump($"TO {dest}");
+                //msg.Dump($"TO {dest}");
             }
         }
 
@@ -363,10 +385,18 @@ namespace GrowattMonitor
             {
                 Console.WriteLine("==> DATA ACK received");
             }
-            if (_listenToInverter)
+            else
             {
-                //Console.WriteLine($"Inverter Status: {telegram.Data["InvStat"]}");
-                StoreData(telegram);
+                if (_listenToInverter)
+                {
+                    //Console.WriteLine($"Inverter Status: {telegram.Data["InvStat"]}");
+                    StoreData(telegram);
+                }
+
+                if ((double) telegram?.Data["InvStat"] == 0)
+                {
+                    cancellation.CancelAfter(5000);
+                }
             }
 
             Message reply = Message.Create(msg.Type, msg.Body, msg.Id);
@@ -411,16 +441,22 @@ namespace GrowattMonitor
             };
 
             var json = JsonSerializer.Serialize(data, options);
-             Console.WriteLine($"Telegram: {json}");
+            if (json == null)
+                return;
 
-            try 
+            Console.WriteLine($"Telegram: {json}");
+
+            try
             {
                 ItemResponse<Telegram> cosmosResponse = await _cosmosContainer.CreateItemAsync<Telegram>(data, new PartitionKey(data.Key));
                 Console.WriteLine("==> Created item in database with id: {0}\n", data.Id);
             }
-            catch (CosmosException ex) when (ex.Status == (int) HttpStatusCode.Conflict)
+            catch (CosmosException ex) when (ex.Status == (int)HttpStatusCode.Conflict)
             {
-                 Console.WriteLine("!! Item in database with id: {0} already exists\n", data.Id);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("!! Item in database with id: {0} already exists\n", data.Id);
+                Console.ResetColor();
+               
             }
         }
 
@@ -448,6 +484,6 @@ namespace GrowattMonitor
 
             Message reply = Message.Create(MessageType.CONFIG, content);
             return reply;
-        }    
+        }
     }
 }

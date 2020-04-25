@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GrowattMonitorShared
 {
@@ -63,7 +66,8 @@ namespace GrowattMonitorShared
             Console.WriteLine($"Today is {DateTime.Now.Date:dd-MM-yyyy}, sunrise @ {riseTime:HH:mm:ss}, sunset @ {setTime:HH:mm:ss}");
 
             // account for calculation discrepancies
-            setTime = setTime.AddMinutes(25);                
+            riseTime = riseTime.AddMinutes(-20);
+            setTime = setTime.AddMinutes(20);
 
             if (currentTime >= riseTime && currentTime <= setTime)
                 return true;
@@ -87,6 +91,21 @@ namespace GrowattMonitorShared
                 Array.Reverse(array);
             }
             return array;
+        }
+    }
+
+    public static class Extensions
+    {
+        public static async Task<Socket> AcceptSocketAsync(this TcpListener listener, CancellationToken token)
+        {
+            try
+            {
+                return await listener.AcceptSocketAsync();
+            }
+            catch (Exception ex) when (token.IsCancellationRequested) 
+            { 
+                throw new OperationCanceledException("Cancellation was requested while awaiting TCP client connection.", ex);
+            }
         }
     }
 }

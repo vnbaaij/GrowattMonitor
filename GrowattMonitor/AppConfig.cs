@@ -19,8 +19,7 @@ namespace GrowattMonitor.Configuration
         public bool ActAsProxy { get; set; }
 
         public TimeSpan ReadInterval { get; set; }
-        public string DataFilesPath { get; set; }
-        public bool SaveDataFiles { get; set; }
+
         public CosmosDBSettings CosmosDBSettings { get; set; }
 
         public double Latitude { get; set; }
