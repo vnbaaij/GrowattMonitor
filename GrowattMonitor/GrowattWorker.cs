@@ -17,21 +17,27 @@ namespace GrowattMonitor
         private readonly ILogger<GrowattWorker> _logger;
         private readonly InverterMonitor _monitor;
 
-        private readonly HistoryRewriter _history;
+        //private readonly HistoryRewriter _history;
         public readonly AppConfig _config;
         private CosmosClient _cosmosClient;
         private CosmosContainer _cosmosContainer;
 
         public DateTime _riseTime=DateTime.MinValue, _setTime =DateTime.MinValue;
 
-        public GrowattWorker(ILogger<GrowattWorker> logger, InverterMonitor monitor, HistoryRewriter history, IOptions<AppConfig> config)
+        //public GrowattWorker(ILogger<GrowattWorker> logger, InverterMonitor monitor, HistoryRewriter history, IOptions<AppConfig> config)
+        //{
+        //    _logger = logger;
+        //    _monitor = monitor;
+        //    _history = history;
+        //    _config = config.Value;
+        //}
+
+        public GrowattWorker(ILogger<GrowattWorker> logger, InverterMonitor monitor, IOptions<AppConfig> config)
         {
             _logger = logger;
             _monitor = monitor;
-            _history = history;
             _config = config.Value;
         }
-
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation($"GrowattMontor started at: {DateTimeOffset.Now}");
@@ -67,13 +73,13 @@ namespace GrowattMonitor
 
                 Console.OutputEncoding = Encoding.Default;
 
-                if (_config.Ids != null)
-                {
-                    _history.Run(_cosmosContainer);
-                }
+                //if (_config.Ids != null)
+                //{
+                //    _history.Run(_cosmosContainer);
+                //}
 
-                if (Utils.IsDaylight(_config.Latitude, _config.Longitude))
-                    _monitor.Run(_cosmosContainer);
+                //if (Utils.IsDaylight(_config.Latitude, _config.Longitude))
+                    await _monitor.Run(_cosmosContainer);
 
                 // Wait for 5 minutes
                 Console.WriteLine("Sleeping for 5 minutes...");

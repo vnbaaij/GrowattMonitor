@@ -19,7 +19,7 @@ namespace GrowattMonitor
 
                     services.Configure<AppConfig>(hostContext.Configuration.GetSection("Configuration"));
                     services.AddSingleton<InverterMonitor>();
-                    services.AddSingleton<HistoryRewriter>();
+                    //services.AddSingleton<HistoryRewriter>();
                     services.AddHostedService<GrowattWorker>();
                 });
     }
