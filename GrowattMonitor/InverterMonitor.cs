@@ -27,7 +27,7 @@ namespace GrowattMonitor
         private static Socket _inverterSocket = null;
         private static Socket _serverSocket = null;
 
-        private static CancellationTokenSource cancellation = new CancellationTokenSource();
+        private static CancellationTokenSource _cancellation;
 
         private byte[] _datalogger;
         private bool _listenToInverter = true;
@@ -46,12 +46,13 @@ namespace GrowattMonitor
 
         public void Run(CosmosContainer cosmosContainer)
         {
+            _cancellation = new CancellationTokenSource();
             _cosmosContainer = cosmosContainer;
 
             TcpListener listener = null;
             IPAddress ip = IPAddress.Parse(_appConfig.DataloggerReceiverAddress);
 
-            cancellation.Token.Register(() => listener.Stop());
+            _cancellation.Token.Register(() => listener.Stop());
 
             Console.WriteLine("Monitor started...");
 
@@ -67,9 +68,9 @@ namespace GrowattMonitor
                 try
                 {
                     // Buffer for reading data
-                    byte[] bytes = ReceiveBytes(listener).Result;
+                    byte[] bytes = ReceiveBytes(listener, _cancellation.Token).Result;
                     // Handle data locally
-                    ProcessBytes(bytes);
+                    ProcessBytes(bytes, _cancellation.Token);
                 }
                 catch (Exception ex)
                 {
@@ -89,7 +90,7 @@ namespace GrowattMonitor
 
         }
 
-        private async Task<Socket> ConnectSocket(Socket socket, string host, TcpListener listener = null)
+        private async Task<Socket> ConnectSocket(Socket socket, string host, CancellationToken cancellationToken,  TcpListener listener = null)
         {
             if (socket != null && socket.Connected)
                 // Everything is awesome!
@@ -105,6 +106,8 @@ namespace GrowattMonitor
 
             try
             {
+                cancellationToken.ThrowIfCancellationRequested(); 
+
                 if (socket == null)
                 {
                     socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -117,7 +120,7 @@ namespace GrowattMonitor
                 if (!socket.Connected)
                     if (listener != null)
                     {
-                        socket = await listener.AcceptSocketAsync(cancellation.Token);
+                        socket = await listener.AcceptSocketAsync(_cancellation.Token);
                     }
                     else
                         socket.Connect(host, 5279);
@@ -134,35 +137,19 @@ namespace GrowattMonitor
             return socket;
         }
 
-        private async Task<byte[]> ReceiveBytes(TcpListener listener)
+        private async Task<byte[]> ReceiveBytes(TcpListener listener, CancellationToken cancellationToken)
         {
-            //Socket s;
             int i = 0;
 
-            /*
-            if (_listenToInverter)
-                s = _inverterSocket = ConnectSocket(_inverterSocket, _appConfig.DataloggerReceiverAddress, listener);
-            else 
-                s = _serverSocket = ConnectSocket(_serverSocket, _appConfig.GrowattServerAddress);
-
-            if (s == null && !_appConfig.ActAsProxy)
-            {
-                _listenToInverter = true;
-                return null;
-            }
-            */
-
-
             if (_inverterSocket == null)
-                _inverterSocket = await ConnectSocket(_inverterSocket, _appConfig.DataloggerReceiverAddress, listener);
+                _inverterSocket = await ConnectSocket(_inverterSocket, _appConfig.DataloggerReceiverAddress, cancellationToken, listener);
             if (_serverSocket == null)
-                _serverSocket = await ConnectSocket(_serverSocket, _appConfig.GrowattServerAddress);
+                _serverSocket = await ConnectSocket(_serverSocket, _appConfig.GrowattServerAddress, cancellationToken);
 
             byte[] bytes = new byte[8192];
 
             try
             {
-                //i = await await Task.WhenAny(_inverterSocket.ReceiveAsync(bytes, SocketFlags.None), _serverSocket.ReceiveAsync(bytes, SocketFlags.None));
                 if (_listenToInverter)
                     i = _inverterSocket.Receive(bytes, SocketFlags.None);
                 else
@@ -181,7 +168,7 @@ namespace GrowattMonitor
             return bytes;
         }
 
-        private void ProcessBytes(byte[] buffer)
+        private void ProcessBytes(byte[] buffer, CancellationToken cancellationToken)
         {
             while (buffer?.Length > 0)
             {
@@ -212,13 +199,13 @@ namespace GrowattMonitor
                 }
                 if (reply != null)
                 {
-                    SendMessage(reply);
+                    SendMessage(reply, cancellationToken);
                 }
                 prevMsgType = msg.Type;
             }
         }
 
-        private void SendMessage(Message msg)
+        private void SendMessage(Message msg, CancellationToken cancellationToken = default)
         {
             Socket s;
             //string dest;
@@ -226,7 +213,7 @@ namespace GrowattMonitor
 
             if (_listenToInverter)
             {
-                s = _serverSocket = ConnectSocket(_serverSocket, _appConfig.GrowattServerAddress).Result;
+                s = _serverSocket = ConnectSocket(_serverSocket, _appConfig.GrowattServerAddress, cancellationToken).Result;
                 //dest = "SERVER";
 
                 _listenToInverter = false;
@@ -235,7 +222,7 @@ namespace GrowattMonitor
             }
             else
             {
-                s = _inverterSocket = ConnectSocket(_inverterSocket, _appConfig.DataloggerReceiverAddress).Result;
+                s = _inverterSocket = ConnectSocket(_inverterSocket, _appConfig.DataloggerReceiverAddress, cancellationToken).Result;
                 //dest = "INVERTER";
 
                 _listenToInverter = true;
@@ -306,20 +293,6 @@ namespace GrowattMonitor
                 Config.Add(cfg); //.Index] = c.Value;
 
                 Console.WriteLine($"==> Inverter says: {cfg.Display()}");
-
-                //if (_state >= MonitorState.IDENTIFY_SENT && cfg.Index == "0x1F")
-                //{
-                //    _state = MonitorState.TIME_SET;
-                //    return SendConfigDate(msg);
-                //}
-
-                //if (_state == MonitorState.TIME_SET)
-                //{
-                //    _state = MonitorState.IDENTIFY_RCVD;
-                //    return SendConfigInterval(msg);
-                //}
-
-                //msg = null;
 
             }
             else
@@ -395,7 +368,7 @@ namespace GrowattMonitor
 
                 if ((double) telegram?.Data["InvStat"] == 0)
                 {
-                    cancellation.CancelAfter(5000);
+                    _cancellation.Cancel(true);
                 }
             }
 
@@ -408,18 +381,6 @@ namespace GrowattMonitor
             if (!msg.IsAck)
             {
                 Console.WriteLine($"==> Configuration received: {cfg.Display()}");
-
-                // Send Identify
-                //if (_state == MonitorState.TIME_SET)
-                //{
-                //    _state = MonitorState.OPEN;
-                //    SendIdentify();
-                //    if (_state != MonitorState.IDENTIFY_SENT)
-                //        Console.WriteLine("Something went wrong with sending query");
-                //}
-
-                //byte[] data = new byte[] { 0x00, byte.Parse(cfg.Index[2..^0], System.Globalization.NumberStyles.HexNumber), 0x00, (byte)((byte[])cfg.Value).Length }
-                //        .Concat((byte[])cfg.Value).ToArray();
             }
             else
             {
@@ -431,7 +392,6 @@ namespace GrowattMonitor
 
         private async void StoreData(Telegram data)
         {
-
             var options = new JsonSerializerOptions
             {
                 IgnoreNullValues = true,
@@ -476,8 +436,6 @@ namespace GrowattMonitor
 
             string datetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             byte[] dt = Encoding.Default.GetBytes(datetime);
-            //byte[] content = new byte[_datalogger.Length + dt.Length + 4];
-
             byte[] content = _datalogger.Concat(new byte[] { 0x00, 0x1F, 0x00, 0x13 })
                 .Concat(dt)
                 .ToArray();
