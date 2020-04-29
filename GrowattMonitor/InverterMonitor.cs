@@ -44,33 +44,38 @@ namespace GrowattMonitor
             _appConfig = appConfig.Value;
         }
 
-        public void Run(CosmosContainer cosmosContainer)
+        public async Task Run(CosmosContainer cosmosContainer)
         {
-            _cancellation = new CancellationTokenSource();
+            
             _cosmosContainer = cosmosContainer;
 
             TcpListener listener = null;
             IPAddress ip = IPAddress.Parse(_appConfig.DataloggerReceiverAddress);
-
-            _cancellation.Token.Register(() => listener.Stop());
-
-            Console.WriteLine("Monitor started...");
-
+            
             // Start listening for client requests.
             listener = new TcpListener(ip, 5279);
             listener.Start();
-            
 
+            _cancellation = new CancellationTokenSource();
+            //_cancellation.Token.Register(() => listener.Stop());
+
+            Console.WriteLine("Monitor started...");
 
             // Enter the listening loop.
-            while (Utils.IsDaylight(_appConfig.Latitude, _appConfig.Longitude))
+            while (Utils.IsDaylight(_appConfig.Latitude, _appConfig.Longitude) && !_cancellation.Token.IsCancellationRequested)
             {
                 try
                 {
                     // Buffer for reading data
-                    byte[] bytes = ReceiveBytes(listener, _cancellation.Token).Result;
+                    byte[] bytes = await ReceiveBytes(listener, _cancellation.Token);
                     // Handle data locally
-                    ProcessBytes(bytes, _cancellation.Token);
+                    await ProcessBytes(bytes, _cancellation.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Canceled!");
+                    Console.ResetColor();
                 }
                 catch (Exception ex)
                 {
@@ -82,9 +87,13 @@ namespace GrowattMonitor
             Console.WriteLine("Monitor stopped...");
 
             // Shutdown and end sockets
-            _inverterSocket?.Close();
-            _serverSocket?.Close();
+            _inverterSocket?.Shutdown(SocketShutdown.Both);
+            _inverterSocket?.Disconnect(reuseSocket: true);
 
+            _serverSocket?.Shutdown(SocketShutdown.Both);
+            _serverSocket?.Disconnect(reuseSocket: true);
+
+            
             // Stop listening for new clients.
             listener.Stop();
 
@@ -110,11 +119,13 @@ namespace GrowattMonitor
 
                 if (socket == null)
                 {
-                    socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    socket.NoDelay = true;
-                    //socket.ReceiveBufferSize = 4096;
-                    socket.ReceiveTimeout = 2500;
-                    socket.SendTimeout = 2500;
+                    socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+                    {
+                        NoDelay = true,
+                        ReceiveBufferSize = 4096,
+                        ReceiveTimeout = 1000,
+                        SendTimeout = 1000
+                    };
                 }
 
                 if (!socket.Connected)
@@ -123,7 +134,7 @@ namespace GrowattMonitor
                         socket = await listener.AcceptSocketAsync(_cancellation.Token);
                     }
                     else
-                        socket.Connect(host, 5279);
+                        await socket.ConnectAsync(host, 5279);
 
                 Console.WriteLine($"...connection established");
             }
@@ -141,12 +152,14 @@ namespace GrowattMonitor
         {
             int i = 0;
 
-            if (_inverterSocket == null)
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (_inverterSocket == null || !_inverterSocket.Connected)
                 _inverterSocket = await ConnectSocket(_inverterSocket, _appConfig.DataloggerReceiverAddress, cancellationToken, listener);
-            if (_serverSocket == null)
+            if (_serverSocket == null || !_serverSocket.Connected)
                 _serverSocket = await ConnectSocket(_serverSocket, _appConfig.GrowattServerAddress, cancellationToken);
 
-            byte[] bytes = new byte[8192];
+            byte[] bytes = new byte[4096];
 
             try
             {
@@ -155,6 +168,11 @@ namespace GrowattMonitor
                 else
                     i = _serverSocket.Receive(bytes, SocketFlags.None);
             }
+           // catch (OperationCanceledException)
+           // {
+           //     Console.WriteLine("Canceled!");
+           //     return null;
+           // }
             catch (SocketException e)
             {
                 if (e.SocketErrorCode == SocketError.TimedOut)
@@ -168,7 +186,7 @@ namespace GrowattMonitor
             return bytes;
         }
 
-        private void ProcessBytes(byte[] buffer, CancellationToken cancellationToken)
+        private async Task ProcessBytes(byte[] buffer, CancellationToken cancellationToken)
         {
             while (buffer?.Length > 0)
             {
@@ -187,13 +205,13 @@ namespace GrowattMonitor
                 else
                     source = "SERVER";
 
-                msg.Dump($"FROM {source}");
+                msg.Dump($"FROM {source}", _appConfig.ShowBytesInDump);
 
                 Message reply = null;
 
                 if (msg != null)
                 {
-                    reply = ProcessMessage(msg);
+                    reply = await ProcessMessage(msg);
                     buffer = msg.Remaining;
 
                 }
@@ -235,7 +253,7 @@ namespace GrowattMonitor
                 int i = s.Send(msg.Content);
 
                 //if (i > 0)
-                //msg.Dump($"TO {dest}");
+                //msg.Dump($"TO {dest}", _appConfig.ShowBytesInDump);
             }
         }
 
@@ -249,7 +267,7 @@ namespace GrowattMonitor
 
         }
 
-        private Message ProcessMessage(Message msg)
+        private async Task<Message> ProcessMessage(Message msg)
         {
             var data = msg.Decode();
             var reply = msg.Type switch
@@ -257,8 +275,8 @@ namespace GrowattMonitor
                 MessageType.PING => ProcessPing((Dictionary<string, object>)data),
                 MessageType.IDENTIFY => ProcessIdentify(msg),
                 MessageType.ANNOUNCE => ProcessAnnounce(msg, (Dictionary<string, object>)data),
-                MessageType.CURRDATA => ProcessData(msg, (Telegram)data),
-                MessageType.HISTDATA => ProcessData(msg, (Telegram)data),
+                MessageType.CURRDATA => await ProcessData(msg, (Telegram)data),
+                MessageType.HISTDATA => await ProcessData(msg, (Telegram)data),
                 MessageType.CONFIG => ProcessConfig(msg, (DataloggerConfig)data),
                 MessageType.REBOOT => null,
                 //MessageType.CONFACK => ProcessConfAck((List<Config>)data),
@@ -287,6 +305,7 @@ namespace GrowattMonitor
 
         private Message ProcessIdentify(Message msg)
         {
+            try {
             if (_listenToInverter)
             {
                 var cfg = msg.DecodeIdentifyDetail();
@@ -303,6 +322,11 @@ namespace GrowattMonitor
                     Console.WriteLine($"==> Reveived request for config items {idreqdata["first"]} to {idreqdata["last"]}...");
                     _firstIdentify = false;
                 }
+            }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
             Message reply = Message.Create(msg.Type, msg.Body, msg.Id);
             return reply;
@@ -352,7 +376,7 @@ namespace GrowattMonitor
             return reply;
         }
 
-        private Message ProcessData(Message msg, Telegram telegram)
+        private async Task<Message> ProcessData(Message msg, Telegram telegram)
         {
             if (msg.IsAck)
             {
@@ -363,10 +387,10 @@ namespace GrowattMonitor
                 if (_listenToInverter)
                 {
                     //Console.WriteLine($"Inverter Status: {telegram.Data["InvStat"]}");
-                    StoreData(telegram);
+                    await StoreData(telegram);
                 }
 
-                if ((double) telegram?.Data["InvStat"] == 0)
+                if ((double) telegram?.Data["InvStat"] == 0 && msg.Type == MessageType.CURRDATA)
                 {
                     _cancellation.Cancel(true);
                 }
@@ -390,7 +414,7 @@ namespace GrowattMonitor
             return reply;
         }
 
-        private async void StoreData(Telegram data)
+        private async Task StoreData(Telegram data)
         {
             var options = new JsonSerializerOptions
             {

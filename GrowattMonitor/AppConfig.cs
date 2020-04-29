@@ -20,6 +20,8 @@ namespace GrowattMonitor.Configuration
 
         public TimeSpan ReadInterval { get; set; }
 
+        public bool ShowBytesInDump { get; set; } = false;
+
         public CosmosDBSettings CosmosDBSettings { get; set; }
 
         public double Latitude { get; set; }

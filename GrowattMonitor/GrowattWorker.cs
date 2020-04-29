@@ -65,11 +65,12 @@ namespace GrowattMonitor
                 Console.OutputEncoding = Encoding.Default;
 
                 if (Utils.IsDaylight(_config.Latitude, _config.Longitude))
-                     _monitor.Run(_cosmosContainer);
+                    await _monitor.Run(_cosmosContainer);
 
                 // Wait for 5 minutes
                 Console.WriteLine("Sleeping for 5 minutes...");
                 await Task.Delay(300000, cancellationToken);
+                //await Task.Delay(1000, cancellationToken);
             }
         }
 

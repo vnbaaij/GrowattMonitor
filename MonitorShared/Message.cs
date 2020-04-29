@@ -8,7 +8,7 @@ namespace GrowattMonitorShared
 {
     public class Message
     {
-        private static readonly bool showBytesInDump = false;
+        //private static readonly bool showBytesInDump = false;
 
         public byte[] Content { get; private set; }
 
@@ -305,15 +305,15 @@ namespace GrowattMonitorShared
         /// Produces output similar to what is used in Growatt WiFi protocol description
         /// https://www.vromans.org/software/sw_growatt_wifi_protocol.html
         /// </summary>
-        /// <param name="infoType">Incoming or outgoing message</param>
-        /// <param name="bytes">The byte array to display</param>
-        /// <param name="hasCrc">Does the byte[] contain a CRC?</param>
-        public void Dump(string infoType, bool hasCrc = true)
+        /// <param name="info">Origin and direction of message</param>
+        /// <param name="showBytesInDump">Output the byte array contents</param>
+        /// <param name="processCrc">Does the byte[] contain a CRC to process?</param>
+        public void Dump(string info, bool showBytesInDump = false, bool processCrc = true)
         {
 
             byte[] crc = new byte[] { 0, 0 };
 
-            if (hasCrc)
+            if (processCrc)
                 crc = Content[^2..^0];
 
             StringBuilder lines = null;
@@ -327,7 +327,7 @@ namespace GrowattMonitorShared
             // Header = 8 bytes, CRC = 2 bytes, Msg length = # of bytes - header (includes CRC)
             int msgLength = Content.Length - 8;
 
-            Console.Write($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss}, {infoType}: {Enum.GetName(typeof(MessageType), Type)} ({msgLength})");
+            Console.Write($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss}, {info}: {Enum.GetName(typeof(MessageType), Type)} ({msgLength})");
             
             if (showBytesInDump)
             {
