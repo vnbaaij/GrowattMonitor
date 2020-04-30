@@ -94,7 +94,7 @@ namespace GrowattMonitorShared
         }
     }
 
-    public static class Extensions
+    public static class SocketExtensions
     {
         public static async Task<Socket> AcceptSocketAsync(this TcpListener listener, CancellationToken token)
         {
