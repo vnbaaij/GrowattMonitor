@@ -177,6 +177,9 @@ namespace GrowattMonitor
             {
                 if (e.SocketErrorCode == SocketError.TimedOut)
                 {
+                    if (Utils.IsDaylight(_appConfig.Latitude, _appConfig.Longitude) && ((DateTime.Now - Utils.riseTime).TotalMinutes < 20 || (DateTime.Now - Utils.setTime).TotalMinutes > 20))
+                        _cancellation.Cancel(true);
+                    
                     _listenToInverter = true;
                     return null;
                 }

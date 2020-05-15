@@ -11,8 +11,8 @@ namespace GrowattMonitorShared
 
     public static class Utils
     {
-        private static DateTime riseTime = DateTime.MinValue;
-        private static DateTime setTime = DateTime.MinValue;
+        public static DateTime riseTime = DateTime.MinValue;
+        public static DateTime setTime = DateTime.MinValue;
 
         public static string ByteArrayToString(byte[] ba)
         {
@@ -98,14 +98,16 @@ namespace GrowattMonitorShared
     {
         public static async Task<Socket> AcceptSocketAsync(this TcpListener listener, CancellationToken token)
         {
+            Socket t = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             try
             {
-                return await listener.AcceptSocketAsync();
+                t = await listener.AcceptSocketAsync();
             }
             catch (Exception ex) when (token.IsCancellationRequested) 
             { 
                 throw new OperationCanceledException("Cancellation was requested while awaiting TCP client connection.", ex);
             }
+            return t;
         }
     }
 }
