@@ -1,9 +1,7 @@
 using System;
-using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Cosmos;
 using GrowattMonitor.Configuration;
 using GrowattMonitorShared;
 using Microsoft.Extensions.Hosting;
@@ -18,10 +16,8 @@ namespace GrowattMonitor
         private readonly InverterMonitor _monitor;
 
         public readonly AppConfig _config;
-        private CosmosClient _cosmosClient;
-        private CosmosContainer _cosmosContainer;
 
-        public DateTime _riseTime=DateTime.MinValue, _setTime =DateTime.MinValue;
+         public DateTime _riseTime=DateTime.MinValue, _setTime =DateTime.MinValue;
 
         public GrowattWorker(ILogger<GrowattWorker> logger, InverterMonitor monitor, IOptions<AppConfig> config)
         {
@@ -32,28 +28,7 @@ namespace GrowattMonitor
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation($"GrowattMonitor started at: {DateTimeOffset.Now}");
-            
-            var endpointUrl = _config.CosmosDBSettings.EndpointUrl;
-            var authorizationKey = _config.CosmosDBSettings.AuthorizationKey;
-            var database = _config.CosmosDBSettings.Database;
-            var container = _config.CosmosDBSettings.Container;
-
-            //Init CosmosDB here
-            
-            //ConnectionPolicy connectionPolicy = new ConnectionPolicy();
-            //connectionPolicy.RetryOptions.MaxRetryAttemptsOnThrottledRequests = 3;
-            //connectionPolicy.RetryOptions.MaxRetryWaitTimeInSeconds = 60;
-
-            var options = new CosmosClientOptions()
-            {
-                Serializer = new CosmosJsonSerializer(),
-            };
-            _cosmosClient = new CosmosClient(endpointUrl, authorizationKey, options);
-            _ = await _cosmosClient.CreateDatabaseIfNotExistsAsync(database);
-            _ = await _cosmosClient.GetDatabase(database).CreateContainerIfNotExistsAsync(container, "/key");
-
-            _cosmosContainer = _cosmosClient.GetContainer(_config.CosmosDBSettings.Database, _config.CosmosDBSettings.Container);
-
+        
             await base.StartAsync(cancellationToken);
         }
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -65,7 +40,7 @@ namespace GrowattMonitor
                 Console.OutputEncoding = Encoding.Default;
 
                 if (Utils.IsDaylight(_config.Latitude, _config.Longitude))
-                    await _monitor.Run(_cosmosContainer);
+                    await _monitor.Run();
 
                 // Wait for 5 minutes
                 Console.WriteLine("Sleeping for 5 minutes...");
@@ -73,6 +48,5 @@ namespace GrowattMonitor
                 //await Task.Delay(1000, cancellationToken);
             }
         }
-
     }
 }

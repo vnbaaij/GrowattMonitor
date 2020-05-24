@@ -38,5 +38,10 @@ namespace GrowattMonitorShared
 
             return Value;
         }
+
+        object IInverterValue.GetFromBuffer(byte[] buffer)
+        {
+            return GetFromBuffer(buffer);
+        }
     }
 }

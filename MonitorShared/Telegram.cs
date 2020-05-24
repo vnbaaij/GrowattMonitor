@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Azure.Cosmos.Table;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,152 +7,128 @@ using System.Text.Json.Serialization;
 
 namespace GrowattMonitorShared
 {
-    public class Telegram
+    public class Telegram : TableEntity
     {
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
+        //[JsonPropertyName("id")]
+        //public string Id { get; set; }
 
-        public string Key { get; set; }
+        //public string Key { get; set; }
 
         public string Datalogger { get; set; }
 
         public string Inverter { get; set; }
 
-        public DateTime Timestamp { get; set; }
+        public DateTime InverterTimestamp { get; set; }
 
-        public Dictionary<string, object> Data { get; private set; } = new Dictionary<string, object>();
+        public int InvStat { get; set; }
+        public double Ppv { get; set; }
+        public double Vpv1 { get; set; }
+        public double Ipv1 { get; set; }
+        public double Ppv1 { get; set; }
+        public double Vpv2 { get; set; }
+        public double Ipv2 { get; set; }
+        public double Ppv2 { get; set; }
+        public double Pac { get; set; }
+        public double Fac { get; set; }
+        public double VacR { get; set; }
+        public double IacR { get; set; }
+        public double PacR { get; set; }
+        public double EacToday { get; set; }
+        public double EacTotal { get; set; }
+        public double TimeTotal { get; set; }
+        public double Temp { get; set; }
+        public double IPMTemp { get; set; }
+        public double Pbusvolt { get; set; }
+        public double Nbusvolt { get; set; }
+        public double CheckStep { get; set; }
+        public double Unknown1 { get; set; }
+        public double ResetCheck  { get; set; }
+        public double IPF { get; set; }
+        public string DeratingMode { get; set; }
+        public double Epv1Today { get; set; }
+        public double Epv1Total { get; set; }
+        public double Epv2Today { get; set; }
+        public double Epv2Total { get; set; }
+        public double EpvTotal { get; set; }
+        public int RealOPPercent { get; set; }
 
         public Telegram()
         {
-
         }
         
         public Telegram(byte[] buffer)
         {
+           
             Datalogger = Encoding.Default.GetString(buffer[8..18]);
             Inverter = Encoding.Default.GetString(buffer[18..28]);
-            Timestamp = new DateTime(2000+buffer[28], buffer[29], buffer[30], buffer[31], buffer[32], buffer[33]);
+            InverterTimestamp = new DateTime(2000+buffer[28], buffer[29], buffer[30], buffer[31], buffer[32], buffer[33]);
+
+            SetEntityProperties();
 
             byte[] energy;
 
             energy = buffer[39..^0];
+            var classType= typeof(Telegram);
 
             foreach (var d in GetDataList())
             {
-                var value = d.Item2.GetFromBuffer(energy);
-                Data[d.Item1] = value;
-                energy = d.Item2.Remaining;
+                var value = d.GetFromBuffer(energy);
+                
+                try
+                {
+                    classType.GetProperty(d.Name).SetValue(this, value);
+                }
+                catch (System.Exception)
+                {
+                    
+                    throw;
+                }
+                
+                energy = d.Remaining;
             }
-            SetCosmosDBProperties();
         }
 
-        public (string, dynamic)[] GetDataList()
+        public List<IInverterValue> GetDataList()
         {
-              return new (string, dynamic)[] {
-                ("InvStat", new InverterValueDouble("InvStat", "", 2, 0, "Inverter run state")),
-                ("Ppv", new InverterValueDouble("Ppv", "W", 4, 1, "Input power")),
-                ("Vpv1", new InverterValueDouble("Vpv1", "V", 2, 1, "PV1 voltage")),
-                ("Ipv1", new InverterValueDouble("Ipv1", "A", 2, 1, "PV1 input current")),
-                ("Ppv1", new InverterValueDouble("Ppv1", "W", 4, 1, "PV1 input power")),
-                ("Vpv2", new InverterValueDouble("Vpv2", "V", 2, 1, "PV2 voltage")),
-                ("Ipv2", new InverterValueDouble("Ipv2", "A", 2, 1, "PV2 input current")),
-                ("Ppv2", new InverterValueDouble("Ppv2", "W", 4, 1, "PV2 input power")),
-                ("Pac", new InverterValueDouble("Pac", "W", 4, 1, "Output power")),
-                ("Fac", new InverterValueDouble("Fac", "Hz", 2, 2, "Grid frequency")),
-                ("VacR", new InverterValueDouble("VacR", "V", 2, 1, "Single phase grid voltage")),
-                ("IacR", new InverterValueDouble("IacR", "A", 2, 1, "Single phase grid output current")),
-                ("PacR", new InverterValueDouble("PacR", "W", 4, 1, "Single phase grid output watt", 16)),
-                //("VacS", new InverterValueDouble("VacS", "V", 2, 1, "Three phase grid voltage")),
-                //("IacS", new InverterValueDouble("IacS", "A", 2, 1, "Three/single phase grid output current")),
-                //("PacS", new InverterValueDouble("PacS", "W", 4, 1, "Three/single phase grid output watt")),
-                //("VacT", new InverterValueDouble("VacT", "V", 2, 1, "Three phase grid voltage")),
-                //("IacT", new InverterValueDouble("IacT", "A", 2, 1, "Three phase grid current")),
-                //("PacT", new InverterValueDouble("PacT", "W", 4, 1, "Three phase grid power")),
-                ("EacToday", new InverterValueDouble("EacToday", "kWh", 4, 1, "Today generate energy")),
-                ("EacTotal", new InverterValueDouble("EacTotal", "kWh", 4, 1, "Total generate energy")),
-                ("Total", new InverterValueDouble("Total", "s", 4, 0, "Work time total")),
-                ("Temp", new InverterValueDouble("Temp", "&deg;C", 2, 1, "Inverter temperature", 16)),
-                //("ISOFault", new InverterValueDouble("ISOFault", "V", 2, 1)),
-                //("GFCIFault", new InverterValueDouble("GFCIFault", "mA", 2, 1)),
-                //("DCIFault", new InverterValueDouble("DCIFault", "Hz", 2, 2)),
-                //("VpvFault", new InverterValueDouble("VpvFault", "V", 2, 1)),
-                //("VacFault", new InverterValueDouble("VacFault", "V", 2, 1)),
-                //("FacFault", new InverterValueDouble("FacFault", "", 2, 2)),
-                //("TempFault", new InverterValueDouble("TempFault", "&deg;C", 2, 1)),
-                //("Faultcode", new InverterValueDouble("Faultcode", "", 2, 0)),
-                ("IPMTemp", new InverterValueDouble("IPMtemp", "&deg;C", 2, 1, "IPM in inverter temperature")),
-                ("Pbusvolt", new InverterValueDouble("Pbusvolt", "V", 2, 1, "P Bus inside Voltage")),
-                ("Nbusvolt", new InverterValueDouble("Nbusvolt", "V", 2, 1, "N Bus inside Voltage")),
-                ("CheckStep", new InverterValueDouble("CheckStep","", 2, 0, "Product check step")),
-                ("Unknown", new InverterValueDouble("Unknown", "", 2, 0)),
-                ("ResetCheck", new InverterValueDouble("REsetCheck", "", 2, 0)),
-                ("IPF", new InverterValueDouble("IPF", "", 2, 0, "Inverter output PF")),
-                ("DeratingMode", new InverterValueString("DeratingMode", 2, "Derating mode")),
-                ("Epv1Today", new InverterValueDouble("Epv1Today", "kWh", 4, 1, "PV Energy today")),
-                ("Epv1Total", new InverterValueDouble("Epv1Total", "kWh", 4, 1, "PV Energy total")),
-                ("Epv2Today", new InverterValueDouble("Epv2Today", "kWh", 4, 1, "PV Energy today")),
-                ("Epv2Total", new InverterValueDouble("Epv2Total", "kWh", 4, 1, "PV Energy total")),
-                ("EpvTotal", new InverterValueDouble("EpvTotal", "kWh", 4, 1, "PV Energy total", 16)),
-                //("Rac", new InverterValueDouble("Rac", "Var", 4, 1, "AC Reactive power")),
-                //("ERacToday", new InverterValueDouble("RacToday", "Kvarh", 4, 1, "AC Reactive energy today")),
-                //("ERacTotal", new InverterValueDouble("RacTotal", "Kvarh", 4, 1, "AC Reactive energy total")),
-                //("WarningCode", new InverterValueDouble("WarningCode", "", 2, 0)),
-                //("WarningValue1", new InverterValueDouble("WarningValue1", "", 2, 0)),
-                ("RealOPPercent", new InverterValueDouble("RealOPPercent", "", 2, 0, "Operating percentage")), // Uncomment if unknowns need to be included in Data, 46)),
-                //("OPFullWatt", new InverterValueDouble("OPFullWatt", "W", 4, 1)),
-                //("WarningValue2", new InverterValueDouble("WarningValue2", "", 2, 0)),
-                //("V_String1", new InverterValueDouble("V_String1", "V", 2, 1)),
-                //("Curr_String1", new InverterValueDouble("Curr_String1", "A", 2, 1)),
-                //("V_String2", new InverterValueDouble("V_String2", "V", 2, 1)),
-                //("Curr_String2", new InverterValueDouble("Curr_String2", "A", 2, 1)),
-                //("V_String3", new InverterValueDouble("V_String3", "V", 2, 1)),
-                //("Curr_String3", new InverterValueDouble("Curr_String3", "A", 2, 1)),
-                //("V_String4", new InverterValueDouble("V_String4", "V", 2, 1)),
-                //("Curr_String4", new InverterValueDouble("Curr_String4", "A", 2, 1)),
-                //("V_String5", new InverterValueDouble("V_String5", "V", 2, 1)),
-                //("Curr_String5", new InverterValueDouble("Curr_String5", "A", 2, 1)),
-                //("V_String6", new InverterValueDouble("V_String6", "V", 2, 1)),
-                //("Curr_String6", new InverterValueDouble("Curr_String6", "A", 2, 1)),
-                //("V_String7", new InverterValueDouble("V_String7", "V", 2, 1)),
-                //("Curr_String7", new InverterValueDouble("Curr_String7", "A", 2, 1)),
-                //("V_String8", new InverterValueDouble("V_String8", "V", 2, 1)),
-                //("Curr_String8", new InverterValueDouble("Curr_String8", "A", 2, 1)),
-                //("Str_Fault", new InverterValueDouble("Str_Fault", "", 2, 0)),
-                //("Str_Warning", new InverterValueDouble("Str_Warning", "", 2, 0)),
-                //("Str_Break", new InverterValueDouble("Str_Break", "", 2, 0)),
-                //("PIDFaultCode", new InverterValueDouble("PIDFaultCode", "", 2, 0)),
-                //("UnknownA", new InverterValueDouble("UnknownA", "", 2, 0)),
-                //("UnknownB", new InverterValueDouble("UnknownB", "", 2, 0)),
-                //("UnknownC", new InverterValueDouble("UnknownC", "", 2, 0)),
-                //("UnknownD", new InverterValueDouble("UnknownD", "", 2, 0)),
-                //("UnknownE", new InverterValueDouble("UnknownE", "", 2, 0)),
-                //("UnknownF", new InverterValueDouble("UnknownF", "", 2, 0)),
-                //("UnknownG", new InverterValueDouble("UnknownG", "", 2, 0)),
-                //("UnknownH", new InverterValueDouble("UnknownH", "", 2, 0)),
-                //("UnknownI", new InverterValueDouble("UnknownI", "", 2, 0)),
-                //("UnknownJ", new InverterValueDouble("UnknownJ", "", 2, 0)),
-                //("UnknownK", new InverterValueDouble("UnknownK", "", 2, 0)),
-                //("UnknownL", new InverterValueDouble("UnknownL", "", 2, 0)),
-                //("UnknownM", new InverterValueDouble("UnknownM", "", 2, 0)),
-                //("UnknownN", new InverterValueDouble("UnknownN", "", 2, 0)),
-                //("UnknownO", new InverterValueDouble("UnknownO", "", 2, 0)),
-                //("UnknownP", new InverterValueDouble("UnknownP", "", 2, 0)),
-                //("UnknownQ", new InverterValueDouble("UnknownQ", "", 2, 0)),
-                //("UnknownR", new InverterValueDouble("UnknownR", "", 2, 0)),
-                //("UnknownS", new InverterValueDouble("UnknownS", "", 2, 0)),
-                //("UnknownT", new InverterValueDouble("UnknownT", "", 2, 0)),
-                //("UnknownU", new InverterValueDouble("UnknownU", "", 2, 0)),
-                //("UnknownV", new InverterValueDouble("UnknownV", "", 2, 0)),
-                //("UnknownW", new InverterValueDouble("UnknownW", "", 2, 0)),
-                //("UnknownX", new InverterValueDouble("UnknownX", "", 2, 0)),
-                //("UnknownY", new InverterValueDouble("UnknownY", "", 2, 0))
+              return new List<IInverterValue> {
+                new InverterValueInt("InvStat", "", "Inverter run state"),
+                new InverterValueDouble("Ppv", "W", 4, 1, "Input power"),
+                new InverterValueDouble("Vpv1", "V", 2, 1, "PV1 voltage"),
+                new InverterValueDouble("Ipv1", "A", 2, 1, "PV1 input current"),
+                new InverterValueDouble("Ppv1", "W", 4, 1, "PV1 input power"),
+                new InverterValueDouble("Vpv2", "V", 2, 1, "PV2 voltage"),
+                new InverterValueDouble("Ipv2", "A", 2, 1, "PV2 input current"),
+                new InverterValueDouble("Ppv2", "W", 4, 1, "PV2 input power"),
+                new InverterValueDouble("Pac", "W", 4, 1, "Output power"),
+                new InverterValueDouble("Fac", "Hz", 2, 2, "Grid frequency"),
+                new InverterValueDouble("VacR", "V", 2, 1, "Single phase grid voltage"),
+                new InverterValueDouble("IacR", "A", 2, 1, "Single phase grid output current"),
+                new InverterValueDouble("PacR", "W", 4, 1, "Single phase grid output watt", 16),
+                new InverterValueDouble("EacToday", "kWh", 4, 1, "Today generate energy"),
+                new InverterValueDouble("EacTotal", "kWh", 4, 1, "Total generate energy"),
+                new InverterValueDouble("TimeTotal", "s", 4, 0, "Work time total"),
+                new InverterValueDouble("Temp", "&deg;C", 2, 1, "Inverter temperature", 16),
+                new InverterValueDouble("IPMTemp", "&deg;C", 2, 1, "IPM in inverter temperature"),
+                new InverterValueDouble("Pbusvolt", "V", 2, 1, "P Bus inside Voltage"),
+                new InverterValueDouble("Nbusvolt", "V", 2, 1, "N Bus inside Voltage"),
+                new InverterValueDouble("CheckStep","", 2, 0, "Product check step"),
+                new InverterValueDouble("Unknown1", "", 2, 0),
+                new InverterValueDouble("ResetCheck", "", 2, 0),
+                new InverterValueDouble("IPF", "", 2, 0, "Inverter output PF"),
+                new InverterValueString("DeratingMode", 2, "Derating mode"),
+                new InverterValueDouble("Epv1Today", "kWh", 4, 1, "PV Energy today"),
+                new InverterValueDouble("Epv1Total", "kWh", 4, 1, "PV Energy total"),
+                new InverterValueDouble("Epv2Today", "kWh", 4, 1, "PV Energy today"),
+                new InverterValueDouble("Epv2Total", "kWh", 4, 1, "PV Energy total"),
+                new InverterValueDouble("EpvTotal", "kWh", 4, 1, "PV Energy total", 16),
+                new InverterValueInt("RealOPPercent", "", "Operating percentage")
             };
         }
 
-        private void SetCosmosDBProperties()
+        private void SetEntityProperties()
         {
-            Id = Timestamp.ToString("yyyyMMddHHmmss");
-            Key = Timestamp.ToString("yyyyMMdd");
+            PartitionKey = InverterTimestamp.ToString("dd");
+            RowKey = InverterTimestamp.ToString("yyyyMMddHHmmss");
         }
 
         public void Dump()
@@ -162,10 +139,12 @@ namespace GrowattMonitorShared
             Console.WriteLine("Telegram data:");
             Console.WriteLine($"Datalogger: {Datalogger}");
             Console.WriteLine($"Inverter: {Inverter}");
-            Console.WriteLine($"Timestamp: {Id}");
-            foreach (var item in Data)
+            Console.WriteLine($"Timestamp: {RowKey}");
+
+            var classType = typeof(Telegram);
+            foreach (var item in GetDataList())
             {
-                Console.WriteLine($"{item.Key} : {item.Value}");
+                Console.WriteLine($"{item.Name} : {classType.GetProperty(item.Name).GetValue(this)}");
             }
         }
     }

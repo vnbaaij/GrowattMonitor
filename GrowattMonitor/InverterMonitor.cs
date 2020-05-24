@@ -10,9 +10,9 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Cosmos;
 using GrowattMonitor.Configuration;
 using GrowattMonitorShared;
+using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -21,8 +21,9 @@ namespace GrowattMonitor
     public class InverterMonitor
     {
         private readonly ILogger<InverterMonitor> _logger;
-        public readonly AppConfig _appConfig;
-        private CosmosContainer _cosmosContainer;
+        private readonly AppConfig _appConfig;
+        private readonly CloudTableClient _tableClient;
+        private CloudTable _table;
 
         private static Socket _inverterSocket = null;
         private static Socket _serverSocket = null;
@@ -42,13 +43,18 @@ namespace GrowattMonitor
         {
             _logger = logger;
             _appConfig = appConfig.Value;
+            
+            string storageConnectionString = _appConfig.StorageConnectionstring;
+
+            // Retrieve storage account information from connection string.
+            CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(storageConnectionString);
+
+            // Create a table client for interacting with the table service
+            _tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
         }
 
-        public async Task Run(CosmosContainer cosmosContainer)
+        public async Task Run()
         {
-            
-            _cosmosContainer = cosmosContainer;
-
             TcpListener listener = null;
             IPAddress ip = IPAddress.Parse(_appConfig.DataloggerReceiverAddress);
             
@@ -123,8 +129,8 @@ namespace GrowattMonitor
                     {
                         NoDelay = true,
                         ReceiveBufferSize = 4096,
-                        ReceiveTimeout = 1000,
-                        SendTimeout = 1000
+                        ReceiveTimeout = 500,
+                        SendTimeout = 500
                     };
                 }
 
@@ -264,7 +270,7 @@ namespace GrowattMonitor
         {
             byte[] request = _datalogger.Concat(new byte[] { 0x00, 0x04, 0x00, 0x15 }).ToArray();
 
-            var msg = Message.Create(MessageType.IDENTIFY, request, 1); // (ushort)data["id"]); //, 0x51);
+            var msg = Message.Create(MessageType.IDENTIFY, request, 1); 
 
             SendMessage(msg);
 
@@ -389,11 +395,10 @@ namespace GrowattMonitor
             {
                 if (_listenToInverter)
                 {
-                    //Console.WriteLine($"Inverter Status: {telegram.Data["InvStat"]}");
-                    await StoreData(telegram);
+                    await StoreTelegram(telegram);
                 }
 
-                if ((double) telegram?.Data["InvStat"] == 0 && msg.Type == MessageType.CURRDATA)
+                if (telegram?.InvStat == 0 && msg.Type == MessageType.CURRDATA)
                 {
                     _cancellation.Cancel(true);
                 }
@@ -417,33 +422,38 @@ namespace GrowattMonitor
             return reply;
         }
 
-        private async Task StoreData(Telegram data)
+        private async Task StoreTelegram(Telegram telegram)
         {
-            var options = new JsonSerializerOptions
+            if (telegram == null)
             {
-                IgnoreNullValues = true,
-                WriteIndented = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                throw new ArgumentNullException("telegram");
+            }
 
-            };
+            // Create or reference an existing table
+           
+            telegram.Dump();
 
-            var json = JsonSerializer.Serialize(data, options);
-            if (json == null)
-                return;
+            string tablename = telegram.GetTablename(_appConfig.TablenamePrefix);
 
-            Console.WriteLine($"Telegram: {json}");
-
+            if (_table?.Name != tablename)
+                _table = await CreateTableAsync(tablename);
+            
             try
             {
-                ItemResponse<Telegram> cosmosResponse = await _cosmosContainer.CreateItemAsync<Telegram>(data, new PartitionKey(data.Key));
-                Console.WriteLine("==> Created item in database with id: {0}\n", data.Id);
+                // Create the InsertOrReplace table operation
+                TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(telegram);
+
+                // Execute the operation.
+                TableResult result = await _table.ExecuteAsync(insertOrMergeOperation);
+                if (result.HttpStatusCode == (int) HttpStatusCode.NoContent)
+                    Console.WriteLine($"Telegram {telegram.RowKey} stored in table {tablename}");
+
+                return;
             }
-            catch (CosmosException ex) when (ex.Status == (int)HttpStatusCode.Conflict)
+            catch (StorageException e)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("!! Item in database with id: {0} already exists\n", data.Id);
-                Console.ResetColor();
-               
+                Console.WriteLine(e.Message);
+                throw;
             }
         }
 
@@ -457,6 +467,40 @@ namespace GrowattMonitor
             Message reply = Message.Create(MessageType.CONFIG, request);
             return reply;
         }
+
+        public CloudStorageAccount CreateStorageAccountFromConnectionString(string storageConnectionString)
+        {
+            CloudStorageAccount storageAccount;
+            try
+            {
+                storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Invalid storage account information provided.");
+                throw;
+            }
+            return storageAccount;
+        }
+
+        public async Task<CloudTable> CreateTableAsync(string tablename)
+        {
+            Console.Write("Checking storage...");
+
+            // Create a table client for interacting with the table service 
+            CloudTable table = _tableClient.GetTableReference(tablename);
+            if (await table.CreateIfNotExistsAsync())
+            {
+                Console.WriteLine("table '{0}' created", tablename);
+            }
+            else
+            {
+                Console.WriteLine("table '{0}' exists", tablename);
+            }
+
+            return table;
+        }
+
 
         private Message SendConfigDate(Message msg)
         {

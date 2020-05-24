@@ -3,14 +3,6 @@ using System.IO.Ports;
 
 namespace GrowattMonitor.Configuration
 {
-     public class CosmosDBSettings
-    {
-        public string EndpointUrl { get; set; }
-        public string AuthorizationKey { get; set; }
-        public string Database { get; set; }
-        public string Container { get; set; }
-    }
-
     public class AppConfig
     {
         public string DataloggerReceiverAddress { get; set; }
@@ -22,7 +14,9 @@ namespace GrowattMonitor.Configuration
 
         public bool ShowBytesInDump { get; set; } = false;
 
-        public CosmosDBSettings CosmosDBSettings { get; set; }
+        public string StorageConnectionstring { get; set; }
+
+        public string TablenamePrefix { get; set; }
 
         public double Latitude { get; set; }
         public double Longitude { get; set; }
