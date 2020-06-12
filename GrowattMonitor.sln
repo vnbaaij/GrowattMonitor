@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestInverter", "TestInverte
 		{377D190E-FECC-489C-A51A-7469D8512D0D} = {377D190E-FECC-489C-A51A-7469D8512D0D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrowattMonitorShared", "MonitorShared\GrowattMonitorShared.csproj", "{377D190E-FECC-489C-A51A-7469D8512D0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrowattMonitorShared", "MonitorShared\GrowattMonitorShared.csproj", "{377D190E-FECC-489C-A51A-7469D8512D0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

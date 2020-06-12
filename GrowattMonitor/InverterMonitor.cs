@@ -22,7 +22,7 @@ namespace GrowattMonitor
     {
         private readonly ILogger<InverterMonitor> _logger;
         private readonly AppConfig _appConfig;
-        private readonly CloudTableClient _tableClient;
+        private readonly StorageTableHelper _storageTableHelper;
         private CloudTable _table;
 
         private static Socket _inverterSocket = null;
@@ -43,14 +43,12 @@ namespace GrowattMonitor
         {
             _logger = logger;
             _appConfig = appConfig.Value;
-            
-            string storageConnectionString = _appConfig.StorageConnectionstring;
 
             // Retrieve storage account information from connection string.
-            CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(storageConnectionString);
+            _storageTableHelper = new StorageTableHelper(_appConfig.StorageConnectionstring);
 
             // Create a table client for interacting with the table service
-            _tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
+            //_tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
         }
 
         public async Task Run()
@@ -436,7 +434,7 @@ namespace GrowattMonitor
             string tablename = telegram.GetTablename(_appConfig.TablenamePrefix);
 
             if (_table?.Name != tablename)
-                _table = await CreateTableAsync(tablename);
+                _table = await _storageTableHelper.GetTableAsync(tablename);
             
             try
             {
@@ -466,39 +464,6 @@ namespace GrowattMonitor
             byte[] request = _datalogger.Concat(new byte[] { 0x0, 0x04, 0x0, 0x01, 0x00 }).ToArray();
             Message reply = Message.Create(MessageType.CONFIG, request);
             return reply;
-        }
-
-        public CloudStorageAccount CreateStorageAccountFromConnectionString(string storageConnectionString)
-        {
-            CloudStorageAccount storageAccount;
-            try
-            {
-                storageAccount = CloudStorageAccount.Parse(storageConnectionString);
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Invalid storage account information provided.");
-                throw;
-            }
-            return storageAccount;
-        }
-
-        public async Task<CloudTable> CreateTableAsync(string tablename)
-        {
-            Console.Write("Checking storage...");
-
-            // Create a table client for interacting with the table service 
-            CloudTable table = _tableClient.GetTableReference(tablename);
-            if (await table.CreateIfNotExistsAsync())
-            {
-                Console.WriteLine("table '{0}' created", tablename);
-            }
-            else
-            {
-                Console.WriteLine("table '{0}' exists", tablename);
-            }
-
-            return table;
         }
 
 

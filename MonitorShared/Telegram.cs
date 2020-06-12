@@ -9,10 +9,6 @@ namespace GrowattMonitorShared
 {
     public class Telegram : TableEntity
     {
-        //[JsonPropertyName("id")]
-        //public string Id { get; set; }
-
-        //public string Key { get; set; }
 
         public string Datalogger { get; set; }
 
@@ -55,10 +51,10 @@ namespace GrowattMonitorShared
         public Telegram()
         {
         }
-        
+
         public Telegram(byte[] buffer)
         {
-           
+
             Datalogger = Encoding.Default.GetString(buffer[8..18]);
             Inverter = Encoding.Default.GetString(buffer[18..28]);
             InverterTimestamp = new DateTime(2000+buffer[28], buffer[29], buffer[30], buffer[31], buffer[32], buffer[33]);
@@ -73,17 +69,17 @@ namespace GrowattMonitorShared
             foreach (var d in GetDataList())
             {
                 var value = d.GetFromBuffer(energy);
-                
+
                 try
                 {
                     classType.GetProperty(d.Name).SetValue(this, value);
                 }
                 catch (System.Exception)
                 {
-                    
+
                     throw;
                 }
-                
+
                 energy = d.Remaining;
             }
         }
@@ -125,7 +121,7 @@ namespace GrowattMonitorShared
             };
         }
 
-        private void SetEntityProperties()
+        public void SetEntityProperties()
         {
             PartitionKey = InverterTimestamp.ToString("dd");
             RowKey = InverterTimestamp.ToString("yyyyMMddHHmmss");
