@@ -17,7 +17,7 @@ namespace GrowattMonitor
 
         public readonly AppConfig _config;
 
-         public DateTime _riseTime=DateTime.MinValue, _setTime =DateTime.MinValue;
+        public DateTime _riseTime = DateTime.MinValue, _setTime = DateTime.MinValue;
 
         public GrowattWorker(ILogger<GrowattWorker> logger, InverterMonitor monitor, IOptions<AppConfig> config)
         {
@@ -28,7 +28,7 @@ namespace GrowattMonitor
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation($"GrowattMonitor started at: {DateTimeOffset.Now}");
-        
+
             await base.StartAsync(cancellationToken);
         }
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)

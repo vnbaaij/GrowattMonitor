@@ -1,0 +1,17 @@
+# GrowattMonitor.service
+[Unit]
+Description=Growatt Inverter Monitor
+
+[Service]
+Type=notify
+Restart=on-failure
+RestartSec=10s
+WorkingDirectory=/home/pi/Desktop/GrowattMonitor
+ExecStart=/home/pi/Desktop/GrowattMonitor/GrowattMonitor
+SyslogIdentifier=GrowattMonitor
+KillSignal=SIGINT
+Environment=DOTNET_ENVIRONMENT=Production
+User=pi
+
+[Install]
+WantedBy=mutli-user.target

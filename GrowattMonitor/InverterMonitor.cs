@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -15,6 +16,7 @@ using GrowattMonitorShared;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 
 namespace GrowattMonitor
 {
@@ -44,26 +46,21 @@ namespace GrowattMonitor
             _logger = logger;
             _appConfig = appConfig.Value;
 
-            // Retrieve storage account information from connection string.
-            _storageTableHelper = new StorageTableHelper(_appConfig.StorageConnectionstring);
+            _logger.LogDebug("StorrageConnectionString: {StorageConnectionstring}", _appConfig.StorageConnectionstring);
 
-            // Create a table client for interacting with the table service
-            //_tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
+            _storageTableHelper = new StorageTableHelper(_appConfig.StorageConnectionstring);
         }
 
         public async Task Run()
         {
-            TcpListener listener = null;
             IPAddress ip = IPAddress.Parse(_appConfig.DataloggerReceiverAddress);
-            
+
             // Start listening for client requests.
-            listener = new TcpListener(ip, 5279);
+            TcpListener listener = new TcpListener(ip, 5279);
             listener.Start();
 
             _cancellation = new CancellationTokenSource();
-            //_cancellation.Token.Register(() => listener.Stop());
-
-            Console.WriteLine("Monitor started...");
+            _logger.LogInformation("Monitor started...");
 
             // Enter the listening loop.
             while (Utils.IsDaylight(_appConfig.Latitude, _appConfig.Longitude) && !_cancellation.Token.IsCancellationRequested)
@@ -77,18 +74,14 @@ namespace GrowattMonitor
                 }
                 catch (OperationCanceledException)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Canceled!");
-                    Console.ResetColor();
+                    _logger.LogWarning("Monitor canceled!");
                 }
                 catch (Exception ex)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(ex);
-                    Console.ResetColor();
+                    _logger.LogError("Error in monitor: {message} ", ex.Message);
                 }
             }
-            Console.WriteLine("Monitor stopped...");
+            _logger.LogInformation("Monitor stopped...");
 
             // Shutdown and end sockets
             _inverterSocket?.Shutdown(SocketShutdown.Both);
@@ -97,7 +90,6 @@ namespace GrowattMonitor
             _serverSocket?.Shutdown(SocketShutdown.Both);
             _serverSocket?.Disconnect(reuseSocket: true);
 
-            
             // Stop listening for new clients.
             listener.Stop();
 
@@ -113,13 +105,13 @@ namespace GrowattMonitor
                 return null;
 
             if (listener != null)
-                Console.WriteLine($"==> Waiting for inverter to connect to proxy ({host})... ");
+                _logger.LogInformation($"==> Waiting for inverter to connect to proxy ({host})... ");
             else
-                Console.WriteLine($"==> Waiting for proxy to connect tot server ({host})... ");
+                _logger.LogInformation($"==> Waiting for proxy to connect tot server ({host})... ");
 
             try
             {
-                cancellationToken.ThrowIfCancellationRequested(); 
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (socket == null)
                 {
@@ -140,13 +132,11 @@ namespace GrowattMonitor
                     else
                         await socket.ConnectAsync(host, 5279);
 
-                Console.WriteLine($"...connection established");
+                _logger.LogInformation($"...connection established");
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(ex);
-                Console.ResetColor();
+                _logger.LogError("Error in monitor: {message}", ex.Message);
             }
 
             return socket;
@@ -183,7 +173,7 @@ namespace GrowattMonitor
                 {
                     if (Utils.IsDaylight(_appConfig.Latitude, _appConfig.Longitude) && ((DateTime.Now - Utils.riseTime).TotalMinutes < 20 || (DateTime.Now - Utils.setTime).TotalMinutes > 20))
                         _cancellation.Cancel(true);
-                    
+
                     _listenToInverter = true;
                     return null;
                 }
@@ -257,7 +247,8 @@ namespace GrowattMonitor
             {
                 s.SendBufferSize = msg.Content.Length;
 
-                int i = s.Send(msg.Content);
+                //int i = 
+                s.Send(msg.Content);
 
                 //if (i > 0)
                 //msg.Dump($"TO {dest}", _appConfig.ShowBytesInDump);
@@ -268,7 +259,7 @@ namespace GrowattMonitor
         {
             byte[] request = _datalogger.Concat(new byte[] { 0x00, 0x04, 0x00, 0x15 }).ToArray();
 
-            var msg = Message.Create(MessageType.IDENTIFY, request, 1); 
+            var msg = Message.Create(MessageType.IDENTIFY, request, 1);
 
             SendMessage(msg);
 
@@ -318,7 +309,7 @@ namespace GrowattMonitor
                 var cfg = msg.DecodeIdentifyDetail();
                 Config.Add(cfg); //.Index] = c.Value;
 
-                Console.WriteLine($"==> Inverter says: {cfg.Display()}");
+                _logger.LogInformation("==> Inverter says: {display}", cfg.Display());
 
             }
             else
@@ -326,14 +317,14 @@ namespace GrowattMonitor
                 var idreqdata = msg.DecodeIdentifyRequest();
                 if (_firstIdentify)
                 {
-                    Console.WriteLine($"==> Reveived request for config items {idreqdata["first"]} to {idreqdata["last"]}...");
+                    _logger.LogInformation("==> Reveived request for config items {first} to {last}...", idreqdata["first"], idreqdata["last"]);
                     _firstIdentify = false;
                 }
             }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("Error in monitor: {message}", ex.Message);
             }
             Message reply = Message.Create(msg.Type, msg.Body, msg.Id);
             return reply;
@@ -345,11 +336,11 @@ namespace GrowattMonitor
             {
                 if (_listenToInverter)
                 {
-                    Console.WriteLine("==>");
-                    Console.WriteLine($"Received announcement from '{Display(data["make"])}' - {Display(data["inverter"])} ({Display(data["inverteralias"])})");
-                    Console.WriteLine($"Data logger: {Display(data["datalogger"])}");
-                    Console.WriteLine($"Version: {Display(data["version"])}");
-                    Console.WriteLine($"Build: {Display(data["build"])}");
+                    
+                    _logger.LogInformation("Received announcement from {make} - {inverter} ({inverteralias})",Display(data["make"]), Display(data["inverter"]), Display(data["inverteralias"]));
+                    _logger.LogInformation("Data logger: {datalogger}", Display(data["datalogger"]));
+                    _logger.LogInformation("Version: {version}", Display(data["version"]));
+                    _logger.LogInformation("Build: {build}", Display(data["build"]));
 
                     var result = BitConverter.ToString((byte[])data["model"]).Replace("-", "").ToCharArray();
 
@@ -362,7 +353,7 @@ namespace GrowattMonitor
                                    "M" + result[6] +
                                    "S" + result[7];
 
-                    Console.WriteLine($"Model {model}");
+                    _logger.LogInformation("Model {model}",model);
 
                     //Console.WriteLine($"{Display(data["blob1"])}");
                     //Console.WriteLine($"{Display(data["blob2"])}");
@@ -376,7 +367,7 @@ namespace GrowattMonitor
             }
             else
             {
-                Console.WriteLine($"==> ANNOUNCE ACK received");
+                _logger.LogInformation("==> ANNOUNCE ACK received");
             }
 
             Message reply = Message.Create(msg.Type, msg.Body, msg.Id);
@@ -387,7 +378,7 @@ namespace GrowattMonitor
         {
             if (msg.IsAck)
             {
-                Console.WriteLine("==> DATA ACK received");
+                _logger.LogInformation("==> DATA ACK received");
             }
             else
             {
@@ -410,11 +401,11 @@ namespace GrowattMonitor
         {
             if (!msg.IsAck)
             {
-                Console.WriteLine($"==> Configuration received: {cfg.Display()}");
+                _logger.LogInformation("==> Configuration received: {Display}", cfg.Display());
             }
             else
             {
-                Console.WriteLine($"==> Configuration ACK received");
+                _logger.LogInformation("==> Configuration ACK received");
             }
             Message reply = Message.Create(MessageType.CONFIG, msg.Body, msg.Id);
             return reply;
@@ -428,14 +419,14 @@ namespace GrowattMonitor
             }
 
             // Create or reference an existing table
-           
+
             telegram.Dump();
 
             string tablename = telegram.GetTablename(_appConfig.TablenamePrefix);
 
             if (_table?.Name != tablename)
                 _table = await _storageTableHelper.GetTableAsync(tablename);
-            
+
             try
             {
                 // Create the InsertOrReplace table operation
@@ -444,13 +435,13 @@ namespace GrowattMonitor
                 // Execute the operation.
                 TableResult result = await _table.ExecuteAsync(insertOrMergeOperation);
                 if (result.HttpStatusCode == (int) HttpStatusCode.NoContent)
-                    Console.WriteLine($"Telegram {telegram.RowKey} stored in table {tablename}");
+                    _logger.LogInformation("Telegram {rowkey} stored in table {tablename}", telegram.RowKey, tablename);
 
                 return;
             }
-            catch (StorageException e)
+            catch (StorageException ex)
             {
-                Console.WriteLine(e.Message);
+                _logger.LogError("Error in monitor: {message}", ex.Message);
                 throw;
             }
         }
@@ -459,25 +450,25 @@ namespace GrowattMonitor
         {
             return Encoding.Default.GetString((byte[])data);
         }
-        private Message SendConfigInterval(Message msg)
-        {
-            byte[] request = _datalogger.Concat(new byte[] { 0x0, 0x04, 0x0, 0x01, 0x00 }).ToArray();
-            Message reply = Message.Create(MessageType.CONFIG, request);
-            return reply;
-        }
+        //private Message SendConfigInterval()
+        //{
+        //    byte[] request = _datalogger.Concat(new byte[] { 0x0, 0x04, 0x0, 0x01, 0x00 }).ToArray();
+        //    Message reply = Message.Create(MessageType.CONFIG, request);
+        //    return reply;
+        //}
 
 
-        private Message SendConfigDate(Message msg)
-        {
+        //private Message SendConfigDate()
+        //{
 
-            string datetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            byte[] dt = Encoding.Default.GetBytes(datetime);
-            byte[] content = _datalogger.Concat(new byte[] { 0x00, 0x1F, 0x00, 0x13 })
-                .Concat(dt)
-                .ToArray();
+        //    string datetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        //    byte[] dt = Encoding.Default.GetBytes(datetime);
+        //    byte[] content = _datalogger.Concat(new byte[] { 0x00, 0x1F, 0x00, 0x13 })
+        //        .Concat(dt)
+        //        .ToArray();
 
-            Message reply = Message.Create(MessageType.CONFIG, content);
-            return reply;
-        }
+        //    Message reply = Message.Create(MessageType.CONFIG, content);
+        //    return reply;
+        //}
     }
 }

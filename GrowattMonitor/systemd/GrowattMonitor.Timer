@@ -1,0 +1,11 @@
+﻿# GrowatMonitor.timer
+[Unit]
+Description=Run the GrowattMonitor on a timer
+
+[Timer]
+OnCalendar=*-*-* 08:30:00
+Unit=GrowattMonitor.service
+Persistent=True
+
+[Install]
+WantedBy=basic.target

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace GrowattMonitorShared
 {
     public class Telegram : TableEntity
     {
+
+        private readonly ILogger _logger;
 
         public string Datalogger { get; set; }
 
@@ -50,11 +53,14 @@ namespace GrowattMonitorShared
 
         public Telegram()
         {
+            var factory = (ILoggerFactory)new LoggerFactory();
+
+            _logger = factory.CreateLogger<Telegram>();
         }
 
-        public Telegram(byte[] buffer)
+        public Telegram(byte[] buffer) : this()
         {
-
+            
             Datalogger = Encoding.Default.GetString(buffer[8..18]);
             Inverter = Encoding.Default.GetString(buffer[18..28]);
             InverterTimestamp = new DateTime(2000+buffer[28], buffer[29], buffer[30], buffer[31], buffer[32], buffer[33]);
@@ -131,16 +137,16 @@ namespace GrowattMonitorShared
         {
             if (this == null)
                 return;
-            Console.WriteLine("==>");
-            Console.WriteLine("Telegram data:");
-            Console.WriteLine($"Datalogger: {Datalogger}");
-            Console.WriteLine($"Inverter: {Inverter}");
-            Console.WriteLine($"Timestamp: {RowKey}");
+
+            _logger.LogDebug("==> Telegram data:");
+            _logger.LogDebug("Datalogger: {Datalogger}", Datalogger);
+            _logger.LogDebug("Inverter: {Inverter}", Inverter);
+            _logger.LogDebug("Timestamp: {RowKey}", RowKey);
 
             var classType = typeof(Telegram);
             foreach (var item in GetDataList())
             {
-                Console.WriteLine($"{item.Name} : {classType.GetProperty(item.Name).GetValue(this)}");
+                _logger.LogDebug("{name}: {value}", item.Name, classType.GetProperty(item.Name).GetValue(this));
             }
         }
     }

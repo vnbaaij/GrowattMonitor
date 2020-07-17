@@ -2,13 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using MonitorUtils;
 
 namespace GrowattMonitorShared
 {
     public class Message
     {
-        //private static readonly bool showBytesInDump = false;
+        private static readonly ILogger _logger;
+
+        static Message()
+        {
+            var factory = (ILoggerFactory)new LoggerFactory();
+            
+            _logger = factory.CreateLogger<Message>();
+        }
 
         public byte[] Content { get; private set; }
 
@@ -72,7 +80,7 @@ namespace GrowattMonitorShared
                 }
                 else
                 {
-                    Console.WriteLine($"Invalid message, expected {message.Size}, got {buffer.Length - 5}");
+                    _logger.LogError("Invalid message, expected {Size}, got {Length}", message.Size, buffer.Length - 5);
                     message.Remaining = null;
                 }
             }
@@ -174,7 +182,7 @@ namespace GrowattMonitorShared
                 case MessageType.CONFACK:
                 //return DecodeConfAck();
                 default:
-                    Console.WriteLine($"Received unknown message type 0x{Type}");
+                    _logger.LogError("Received unknown message type 0x{Type}", Type);
                     break;
             }
             return null;
@@ -326,17 +334,16 @@ namespace GrowattMonitorShared
 
             // Header = 8 bytes, CRC = 2 bytes, Msg length = # of bytes - header (includes CRC)
             int msgLength = Content.Length - 8;
-
-            Console.Write($"\n{DateTime.Now:yyyy-MM-dd HH:mm:ss}, {info}: {Enum.GetName(typeof(MessageType), Type)} ({msgLength})");
+            _logger.LogDebug("Message: {time}, {info}: {type} ({length})", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), info,Enum.GetName(typeof(MessageType), Type), msgLength );
             
             if (showBytesInDump)
             {
-                Console.Write($" CRC: {crc[0]:X2} {crc[1]:X2}\n");
-                Console.Write(lines.ToString());
+                _logger.LogDebug("CRC: {crc0:X2} {crc1:X2}\n", crc[0], crc[1]);
+                _logger.LogDebug(lines.ToString());
             }
             else
             {
-                Console.Write("\n");
+                _logger.LogDebug("\n");
             }
         }
 

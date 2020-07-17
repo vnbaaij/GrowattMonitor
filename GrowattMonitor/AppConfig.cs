@@ -16,6 +16,8 @@ namespace GrowattMonitor.Configuration
 
         public string StorageConnectionstring { get; set; }
 
+        public string pmskey { get; set; }
+
         public string TablenamePrefix { get; set; }
 
         public double Latitude { get; set; }
