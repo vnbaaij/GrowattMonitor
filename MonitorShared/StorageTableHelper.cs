@@ -24,6 +24,12 @@ namespace GrowattMonitorShared
             Console.Write("Checking storage...");
             CloudStorageAccount storageAccount = this.CreateStorageAccountFromConnectionString();
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
+
+            tableClient.DefaultRequestOptions = new TableRequestOptions
+            {
+                RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(5), 3),
+                MaximumExecutionTime = TimeSpan.FromSeconds(10)
+            };
             CloudTable table = tableClient.GetTableReference(tablename);
 
             if (await table.CreateIfNotExistsAsync())

@@ -80,7 +80,8 @@ namespace GrowattMonitor
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Exception in monitor");
+                    _logger.LogError(ex, "Exception in monitor: ");
+                    _cancellation.Cancel(false);
                 }
             }
             _logger.LogInformation("Monitor stopped...");
