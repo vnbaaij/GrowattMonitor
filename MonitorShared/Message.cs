@@ -9,13 +9,14 @@ namespace GrowattMonitorShared
 {
     public class Message
     {
-        private static readonly ILogger _logger;
+        private static ILoggerFactory _loggerFactory;
+        private static ILogger<Message> _logger;
 
         static Message()
         {
-            var factory = (ILoggerFactory)new LoggerFactory();
-            
-            _logger = factory.CreateLogger<Message>();
+            //var factory = (ILoggerFactory)new LoggerFactory();
+            if (_loggerFactory != null)
+                _logger = _loggerFactory.CreateLogger<Message>();
         }
 
         public byte[] Content { get; private set; }
@@ -49,9 +50,14 @@ namespace GrowattMonitorShared
 
         public bool IsAck { get; private set; } = false;
 
-        public static Message CreateFromByteBuffer(byte[] buffer)
+        public static Message CreateFromByteBuffer(byte[] buffer, ILoggerFactory loggerFactory)
         {
+             _loggerFactory = loggerFactory;
+             if (_logger == null)
+                _logger = _loggerFactory.CreateLogger<Message>();
+
             var message = new Message();
+           
             if (buffer.Length > 6)
             {
                 var header = buffer[0..8];
@@ -232,7 +238,7 @@ namespace GrowattMonitorShared
 
         private Telegram DecodeData()
         {
-            return new Telegram(Content);
+            return new Telegram(Content, _loggerFactory);
         }
 
         private Dictionary<string, object> DecodePing()

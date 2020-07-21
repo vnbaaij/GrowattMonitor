@@ -21,7 +21,7 @@
                 "debuggerPath": "~/.vsdbg/vsdbg"
             },
             "env": {
-                "DOTNET_ENVIRONMENT" : "Production"
+                "DOTNET_ENVIRONMENT" : "Development"
             }
 
         },

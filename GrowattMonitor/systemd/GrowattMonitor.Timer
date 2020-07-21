@@ -3,7 +3,7 @@
 Description=Run the GrowattMonitor on a timer
 
 [Timer]
-OnCalendar=*-*-* 08:30:00
+OnCalendar=*-*-* 08..20:*:00
 Unit=GrowattMonitor.service
 Persistent=True
 

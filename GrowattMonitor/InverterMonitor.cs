@@ -22,6 +22,7 @@ namespace GrowattMonitor
 {
     public class InverterMonitor
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<InverterMonitor> _logger;
         private readonly AppConfig _appConfig;
         private readonly StorageTableHelper _storageTableHelper;
@@ -41,8 +42,9 @@ namespace GrowattMonitor
         public List<DataloggerConfig> Config { get; set; } = new List<DataloggerConfig>();
 
 
-        public InverterMonitor(ILogger<InverterMonitor> logger, IOptions<AppConfig> appConfig)
+        public InverterMonitor(ILoggerFactory loggerFactory, ILogger<InverterMonitor> logger, IOptions<AppConfig> appConfig)
         {
+            _loggerFactory = loggerFactory;
             _logger = logger;
             _appConfig = appConfig.Value;
 
@@ -78,7 +80,7 @@ namespace GrowattMonitor
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Error in monitor: {message} ", ex.Message);
+                    _logger.LogError(ex, "Exception in monitor");
                 }
             }
             _logger.LogInformation("Monitor stopped...");
@@ -105,9 +107,9 @@ namespace GrowattMonitor
                 return null;
 
             if (listener != null)
-                _logger.LogInformation($"==> Waiting for inverter to connect to proxy ({host})... ");
+                _logger.LogInformation("==> Waiting for inverter to connect to proxy ({host})... ", host);
             else
-                _logger.LogInformation($"==> Waiting for proxy to connect tot server ({host})... ");
+                _logger.LogInformation("==> Waiting for proxy to connect tot server ({host})... ", host);
 
             try
             {
@@ -132,11 +134,11 @@ namespace GrowattMonitor
                     else
                         await socket.ConnectAsync(host, 5279);
 
-                _logger.LogInformation($"...connection established");
+                _logger.LogInformation("...connection established");
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in monitor: {message}", ex.Message);
+                _logger.LogError(ex, "Exception in monitor");
             }
 
             return socket;
@@ -188,7 +190,7 @@ namespace GrowattMonitor
             while (buffer?.Length > 0)
             {
                 // Process the data sent by the client.
-                var msg = Message.CreateFromByteBuffer(buffer);
+                var msg = Message.CreateFromByteBuffer(buffer, _loggerFactory);
 
                 // When in IDENTIFY loop, keep listening to inverter
                 if (msg.Type == MessageType.IDENTIFY && prevMsgType == MessageType.IDENTIFY)
@@ -247,7 +249,7 @@ namespace GrowattMonitor
             {
                 s.SendBufferSize = msg.Content.Length;
 
-                //int i = 
+                //int i =
                 s.Send(msg.Content);
 
                 //if (i > 0)
@@ -336,7 +338,7 @@ namespace GrowattMonitor
             {
                 if (_listenToInverter)
                 {
-                    
+
                     _logger.LogInformation("Received announcement from {make} - {inverter} ({inverteralias})",Display(data["make"]), Display(data["inverter"]), Display(data["inverteralias"]));
                     _logger.LogInformation("Data logger: {datalogger}", Display(data["datalogger"]));
                     _logger.LogInformation("Version: {version}", Display(data["version"]));
@@ -378,7 +380,7 @@ namespace GrowattMonitor
         {
             if (msg.IsAck)
             {
-                _logger.LogInformation("==> DATA ACK received");
+                _logger.LogInformation("==> DATA ACK received ({type})", msg.Type);
             }
             else
             {

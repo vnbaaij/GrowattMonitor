@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using GrowattMonitorShared;
+using Microsoft.Extensions.Logging;
 
 namespace GrowattMonitorShared
 {
@@ -23,6 +24,8 @@ namespace GrowattMonitorShared
 
     public class Program
     {
+        private static ILoggerFactory _loggerFactory;
+        private static ILogger<Program> _logger;
         private static readonly string ipAddress = "192.168.1.121";
 
         private static readonly byte[] PING = new byte[] {
@@ -202,6 +205,10 @@ namespace GrowattMonitorShared
 
         static void Main()
         {
+
+            _loggerFactory = (ILoggerFactory)new LoggerFactory();
+            _logger = _loggerFactory.CreateLogger<Program>();
+
             Console.WriteLine("==> Press Enter to start test inverter ...");
             Console.Read();
 
@@ -254,7 +261,7 @@ namespace GrowattMonitorShared
             while (buffer?.Length > 0)
             {
                 // Process the data sent by the client.
-                var msg = Message.CreateFromByteBuffer(buffer);
+                var msg = Message.CreateFromByteBuffer(buffer, _loggerFactory);
 
                 msg.Dump("IN");
 
@@ -286,7 +293,7 @@ namespace GrowattMonitorShared
                     Console.WriteLine("==> Ping reply received");
                     if (firstPing)
                     {
-                        reply = Message.CreateFromByteBuffer(ANNOUNCE);
+                        reply = Message.CreateFromByteBuffer(ANNOUNCE, _loggerFactory);
 
                         _state = InverterState.ANNOUNCE_SENT;
                     }
@@ -353,7 +360,7 @@ namespace GrowattMonitorShared
 
         private static void SendPing()
         {
-            var msg = Message.CreateFromByteBuffer(PING);
+            var msg = Message.CreateFromByteBuffer(PING, _loggerFactory);
             SendMessage(msg);
 
             _state = InverterState.PING_SENT;
@@ -364,7 +371,7 @@ namespace GrowattMonitorShared
 
         private static void SendAnnounce()
         {
-            var msg = Message.CreateFromByteBuffer(ANNOUNCE);
+            var msg = Message.CreateFromByteBuffer(ANNOUNCE, _loggerFactory);
             SendMessage(msg);
 
             _state = InverterState.ANNOUNCE_SENT;
@@ -374,7 +381,7 @@ namespace GrowattMonitorShared
         }
         private static void SendData()
         {
-            var msg = Message.CreateFromByteBuffer(DATA);
+            var msg = Message.CreateFromByteBuffer(DATA, _loggerFactory);
             SendMessage(msg);
             Console.WriteLine("Sent DATA");
         }
@@ -383,7 +390,7 @@ namespace GrowattMonitorShared
         {
             foreach (var buffer in IDENTIFY)
             {
-                var msg = Message.CreateFromByteBuffer(buffer);
+                var msg = Message.CreateFromByteBuffer(buffer, _loggerFactory);
 
                 DataloggerConfig cfg = msg.DecodeIdentifyDetail();
 

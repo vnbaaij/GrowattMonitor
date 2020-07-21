@@ -1,9 +1,9 @@
 ﻿# StopGrowattMonitor.timer
 [Unit]
-Description=Stops the GrowattMonitor at 20:30 everyday
+Description=Stops the GrowattMonitor at 21:00 everyday
 
 [Timer]
-OnCalendar=*-*-* 10:45:00
+OnCalendar=*-*-* 21:00:00
 Unit=StopGrowattMonitor.service
 
 [Install]

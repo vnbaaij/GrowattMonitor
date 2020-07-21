@@ -11,7 +11,7 @@ namespace GrowattMonitorShared
     public class Telegram : TableEntity
     {
 
-        private readonly ILogger _logger;
+        private readonly ILogger<Telegram> _logger;
 
         public string Datalogger { get; set; }
 
@@ -51,14 +51,14 @@ namespace GrowattMonitorShared
         public double EpvTotal { get; set; }
         public int RealOPPercent { get; set; }
 
-        public Telegram()
+        public Telegram(ILoggerFactory loggerFactory)
         {
-            var factory = (ILoggerFactory)new LoggerFactory();
+            //var factory = (ILoggerFactory)new LoggerFactory();
 
-            _logger = factory.CreateLogger<Telegram>();
+            _logger = loggerFactory.CreateLogger<Telegram>();
         }
 
-        public Telegram(byte[] buffer) : this()
+        public Telegram(byte[] buffer, ILoggerFactory factory) : this(factory)
         {
             
             Datalogger = Encoding.Default.GetString(buffer[8..18]);

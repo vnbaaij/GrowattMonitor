@@ -22,8 +22,6 @@ namespace GrowattMonitor.Configuration
 
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-
-        public string[] Ids { get; set; } = null;
     }
 }
 
