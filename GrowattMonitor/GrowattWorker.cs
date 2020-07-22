@@ -39,13 +39,14 @@ namespace GrowattMonitor
 
                 Console.OutputEncoding = Encoding.Default;
 
+                // Only run the monitor when there is actual daylight
                 if (Utils.IsDaylight(_config.Latitude, _config.Longitude))
                     await _monitor.Run();
 
-                // Wait for 5 minutes
-                Console.WriteLine("Sleeping for 5 minutes...");
-                await Task.Delay(300000, cancellationToken);
-                //await Task.Delay(1000, cancellationToken);
+                // Wait for 1 minute
+                Console.WriteLine("Sleeping for 1 minute...");
+                await Task.Delay(60000, cancellationToken);
+                
             }
         }
     }

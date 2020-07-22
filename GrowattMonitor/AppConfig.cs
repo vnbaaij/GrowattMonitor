@@ -6,7 +6,12 @@ namespace GrowattMonitor.Configuration
     public class AppConfig
     {
         public string DataloggerReceiverAddress { get; set; }
+
+        public int DataloggerReceiverPort { get; set; }
+
         public string GrowattServerAddress { get; set; }
+
+        public int GrowattServerPort { get; set; }
 
         public bool ActAsProxy { get; set; }
 
@@ -15,8 +20,6 @@ namespace GrowattMonitor.Configuration
         public bool ShowBytesInDump { get; set; } = false;
 
         public string StorageConnectionstring { get; set; }
-
-        public string pmskey { get; set; }
 
         public string TablenamePrefix { get; set; }
 
