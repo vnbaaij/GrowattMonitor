@@ -27,8 +27,8 @@ namespace GrowattMonitorShared
 
             tableClient.DefaultRequestOptions = new TableRequestOptions
             {
-                RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3),
-                MaximumExecutionTime = TimeSpan.FromSeconds(30)
+                RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(5), 5),
+                MaximumExecutionTime = TimeSpan.FromSeconds(35)
             };
             CloudTable table = tableClient.GetTableReference(tablename);
 

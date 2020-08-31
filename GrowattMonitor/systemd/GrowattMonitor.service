@@ -6,13 +6,16 @@ Conflicts=GrowattMonitor.timer
 [Service]
 Type=notify
 Restart=on-failure
-RestartSec=10s
+RestartSec=10
 WorkingDirectory=/home/pi/Desktop/GrowattMonitor
 ExecStart=/home/pi/Desktop/GrowattMonitor/GrowattMonitor
 SyslogIdentifier=GrowattMonitor
 KillSignal=SIGINT
+Environment=AZUREADAPPLICATIONID=734927b4-104e-4e23-a71e-cdf8362be2a6
+Environment=AZUREADCERTTHUMBPRINT=8AE201C8CC8B313EF1EAE7A057583D3DC01B9BC6
+Environment=KEYVAULTNAME=powermonitorvault
 Environment=DOTNET_ENVIRONMENT=Production
 User=pi
 
 [Install]
-WantedBy=mutli-user.target
+WantedBy=multi-user.target

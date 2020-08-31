@@ -1,4 +1,4 @@
-﻿# StopGrowattMonitor.service
+# GrowattMonitorStop.service
 [Unit]
 Desctiption=Close down the GrowattMonitor service
 Conflicts=GrowattMonitor.service
@@ -6,3 +6,5 @@ Conflicts=GrowattMonitor.service
 [Service]
 Type=oneshot
 ExecStart=/bin/echo "Closing down the GrowattMonitor.service"
+
+

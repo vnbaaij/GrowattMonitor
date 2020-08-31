@@ -457,7 +457,7 @@ namespace GrowattMonitor
             }
             catch (StorageException ex)
             {
-                _logger.LogError(ex, "Error in storing telegram: ");
+                //_logger.LogError(ex, "Error in storing telegram: ");
                 _listenToInverter = true;
                 throw;
             }

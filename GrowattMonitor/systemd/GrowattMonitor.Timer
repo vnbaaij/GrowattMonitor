@@ -1,4 +1,4 @@
-﻿# GrowatMonitor.timer
+# GrowatMonitor.timer
 [Unit]
 Description=Run the GrowattMonitor on a timer
 
