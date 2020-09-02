@@ -32,6 +32,7 @@ namespace GrowattMonitor
         private byte[] _datalogger;
         private bool _listenToInverter = true;
         private static bool _firstIdentify = true;
+        private static bool _inIdentifyLoop = false;
 
         private MessageType prevMsgType;
 
@@ -128,8 +129,8 @@ namespace GrowattMonitor
                     {
                         NoDelay = true,
                         ReceiveBufferSize = 4096,
-                        ReceiveTimeout = 3500,
-                        SendTimeout = 3500
+                        ReceiveTimeout = 10000,
+                        SendTimeout = 3000
                     };
                 }
 
@@ -181,13 +182,15 @@ namespace GrowattMonitor
             {
                 if (e.SocketErrorCode == SocketError.TimedOut)
                 {
-                    _logger.LogError(e, "Error when receiving bytes: ");
-                    if (Utils.IsDaylight(_appConfig.Latitude, _appConfig.Longitude) && ((DateTime.Now - Utils.riseTime).TotalMinutes < 20 || (DateTime.Now - Utils.setTime).TotalMinutes > 20))
-                    {
-                        _logger.LogError("Outside of daylight period, cancelling run.");
-                        _cancellation.Cancel(true);
-                    }
+                    //_logger.LogError(e, "Error when receiving bytes: ");
+                    //if (Utils.IsDaylight(_appConfig.Latitude, _appConfig.Longitude) && ((DateTime.Now - Utils.riseTime).TotalMinutes < 20 || (DateTime.Now - Utils.setTime).TotalMinutes > 20))
+                    //{
+                    //    _logger.LogError("Outside of daylight period, cancelling run.");
+                    //    _cancellation.Cancel(true);
+                    //}
 
+                    //If there is a timeout just fall back to listening to inverter as it will always restart comminications from that side
+                    
                     _listenToInverter = true;
                     return null;
                 }
@@ -205,9 +208,15 @@ namespace GrowattMonitor
                 var msg = Message.CreateFromByteBuffer(buffer, _loggerFactory);
 
                 // When in IDENTIFY loop, keep listening to inverter
+                _inIdentifyLoop = false;
                 if (msg.Type == MessageType.IDENTIFY && prevMsgType == MessageType.IDENTIFY)
                 {
+                    _inIdentifyLoop = true;
                     _listenToInverter = true;
+                }
+                else
+                {
+                    _inIdentifyLoop = false;
                 }
 
                 string source;
@@ -240,12 +249,13 @@ namespace GrowattMonitor
             //string dest;
             bool sendMessage = true;
 
-            if (_listenToInverter)
+            if (_listenToInverter )
             {
                 s = _serverSocket = ConnectSocket(_serverSocket).Result;
                 //dest = "SERVER";
 
-                _listenToInverter = false;
+                if (!_inIdentifyLoop)
+                    _listenToInverter = false;
 
                 sendMessage = _appConfig.ActAsProxy;
             }
@@ -353,7 +363,7 @@ namespace GrowattMonitor
                 if (_listenToInverter)
                 {
 
-                    _logger.LogInformation("Received announcement from {make} - {inverter} ({inverteralias})", Display(data["make"]), Display(data["inverter"]), Display(data["inverteralias"]));
+                    _logger.LogInformation("Received announcement from {make} - {inverter}({inverteralias})", Display(data["make"]), Display(data["inverter"]), Display(data["inverteralias"]));
                     _logger.LogInformation("Data logger: {datalogger}", Display(data["datalogger"]));
                     _logger.LogInformation("Version: {version}", Display(data["version"]));
                     _logger.LogInformation("Build: {build}", Display(data["build"]));
@@ -455,7 +465,7 @@ namespace GrowattMonitor
 
                 return;
             }
-            catch (StorageException ex)
+            catch (StorageException)
             {
                 //_logger.LogError(ex, "Error in storing telegram: ");
                 _listenToInverter = true;

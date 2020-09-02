@@ -208,7 +208,7 @@ namespace GrowattMonitorShared
                     { "blob1", Content[28..57] },
                     { "build", Content[57..62] },
                     { "blob2", Content[62..85] },
-                    { "inverteralias", Content[85..96] },
+                    { "inverteralias", Content[85..95] },
                     { "model", Content[95..99] },
                     { "blob3", Content[99..161] },
                     { "make", Content[161..177] },
