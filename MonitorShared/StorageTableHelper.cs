@@ -1,38 +1,33 @@
-﻿using Microsoft.Azure.Cosmos.Table;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
+using Azure.Data.Tables;
+using Azure.Data.Tables.Models;
+using Microsoft.Azure.Cosmos.Table;
 
 namespace GrowattMonitorShared
 {
     public class StorageTableHelper
     {
 
-        private string StorageConnectionString { get; set; }
+        private string _storageConnectionString;
 
         public StorageTableHelper() { }
 
         public StorageTableHelper(string storageConnectionString)
         {
-            StorageConnectionString = storageConnectionString;
+            _storageConnectionString = storageConnectionString;
         }
 
 
-        public async Task<CloudTable> GetTableAsync(string tablename)
+        public async Task<TableClient> GetTableAsync(string tablename)
         {
             Console.Write("Checking storage...");
-            CloudStorageAccount storageAccount = this.CreateStorageAccountFromConnectionString();
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
 
-            tableClient.DefaultRequestOptions = new TableRequestOptions
-            {
-                RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(5), 5),
-                MaximumExecutionTime = TimeSpan.FromSeconds(35)
-            };
-            CloudTable table = tableClient.GetTableReference(tablename);
+            var serviceClient = new TableServiceClient(_storageConnectionString);
 
-            if (await table.CreateIfNotExistsAsync())
+            var result = await serviceClient.CreateTableIfNotExistsAsync(tablename);
+
+            if (result != null)
             {
                 Console.WriteLine("table '{0}' created", tablename);
             }
@@ -41,22 +36,11 @@ namespace GrowattMonitorShared
                 Console.WriteLine("table '{0}' exists", tablename);
             }
 
-            return table;
-        }
+            var table = serviceClient.GetTableClient(tablename);
 
-        public CloudStorageAccount CreateStorageAccountFromConnectionString()
-        {
-            CloudStorageAccount storageAccount;
-            try
-            {
-                storageAccount = CloudStorageAccount.Parse(StorageConnectionString);
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Invalid storage account information provided.");
-                throw;
-            }
-            return storageAccount;
+
+
+            return table;
         }
     }
 }

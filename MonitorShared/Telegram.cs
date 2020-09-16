@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using Azure;
+using Azure.Data.Tables;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -8,8 +9,12 @@ using System.Text.Json.Serialization;
 
 namespace GrowattMonitorShared
 {
-    public class Telegram : TableEntity
+    public class Telegram : ITableEntity
     {
+        public string PartitionKey { get; set; }
+        public string RowKey { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get; set; }
 
         private readonly ILogger<Telegram> _logger;
 
@@ -58,9 +63,13 @@ namespace GrowattMonitorShared
             _logger = loggerFactory.CreateLogger<Telegram>();
         }
 
+        public Telegram()
+        {
+
+        }
+
         public Telegram(byte[] buffer, ILoggerFactory factory) : this(factory)
         {
-            
             Datalogger = Encoding.Default.GetString(buffer[8..18]);
             Inverter = Encoding.Default.GetString(buffer[18..28]);
             InverterTimestamp = new DateTime(2000+buffer[28], buffer[29], buffer[30], buffer[31], buffer[32], buffer[33]);

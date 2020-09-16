@@ -7,9 +7,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure;
+using Azure.Data.Tables;
 using GrowattMonitor.Configuration;
 using GrowattMonitorShared;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -22,7 +23,8 @@ namespace GrowattMonitor
         private readonly ILogger<InverterMonitor> _logger;
         private readonly AppConfig _appConfig;
         private readonly StorageTableHelper _storageTableHelper;
-        private CloudTable _table;
+        //private CloudTable _table;
+        private TableClient _table;
 
         private static Socket _inverterSocket = null;
         private static Socket _serverSocket = null;
@@ -35,6 +37,7 @@ namespace GrowattMonitor
         private static bool _inIdentifyLoop = false;
 
         private MessageType prevMsgType;
+        private static string prevTablename;
 
         public List<DataloggerConfig> Config { get; set; } = new List<DataloggerConfig>();
 
@@ -190,7 +193,7 @@ namespace GrowattMonitor
                     //}
 
                     //If there is a timeout just fall back to listening to inverter as it will always restart comminications from that side
-                    
+
                     _listenToInverter = true;
                     return null;
                 }
@@ -444,30 +447,25 @@ namespace GrowattMonitor
                 throw new ArgumentNullException("telegram");
             }
 
-            // Create or reference an existing table
-
             telegram.Dump();
 
+            // Create or reference an existing table
             string tablename = telegram.GetTablename(_appConfig.TablenamePrefix);
-
-            if (_table?.Name != tablename)
+            if (prevTablename != tablename)
+            {
                 _table = await _storageTableHelper.GetTableAsync(tablename);
-
+                prevTablename = tablename;
+            }
             try
             {
-                // Create the InsertOrReplace table operation
-                TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(telegram);
-
-                // Execute the operation.
-                TableResult result = await _table.ExecuteAsync(insertOrMergeOperation);
-                if (result.HttpStatusCode == (int)HttpStatusCode.NoContent)
+                var result = await _table.UpsertEntityAsync(telegram);
+                if (result.Status == (int)HttpStatusCode.NoContent)
                     _logger.LogInformation("Telegram {rowkey} stored in table {tablename}", telegram.RowKey, tablename);
 
                 return;
             }
-            catch (StorageException)
+            catch (RequestFailedException)
             {
-                //_logger.LogError(ex, "Error in storing telegram: ");
                 _listenToInverter = true;
                 throw;
             }
