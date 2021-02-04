@@ -119,7 +119,7 @@ namespace GrowattMonitor
             {
                 host = _appConfig.GrowattServerAddress;
                 port = _appConfig.GrowattServerPort;
-                _logger.LogInformation("==> Waiting for proxy to connect tot server ({host}:{port})... ", host, port);
+                _logger.LogInformation("==> Waiting for proxy to connect to server ({host}:{port})... ", host, port);
             }
 
             try

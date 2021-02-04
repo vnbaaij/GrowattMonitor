@@ -44,8 +44,8 @@ namespace GrowattMonitor
                     await _monitor.Run();
 
                 // Wait for 1 minute
-                Console.WriteLine("Sleeping for 1 minute...");
-                await Task.Delay(60000, cancellationToken);
+                Console.WriteLine("Sleeping for 10 minutes...");
+                await Task.Delay(600000, cancellationToken);
                 
             }
         }
