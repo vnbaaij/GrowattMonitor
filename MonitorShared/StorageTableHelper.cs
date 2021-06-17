@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Azure.Data.Tables;
-using Azure.Data.Tables.Models;
-using Microsoft.Azure.Cosmos.Table;
+
 
 namespace GrowattMonitorShared
 {
