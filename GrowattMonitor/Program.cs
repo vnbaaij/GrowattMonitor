@@ -23,8 +23,8 @@ namespace GrowattMonitor
                 .UseSystemd()
                 .ConfigureAppConfiguration((hostContext, config) =>
                 {
-                    if (hostContext.HostingEnvironment.IsProduction())
-                    {
+                    //if (hostContext.HostingEnvironment.IsProduction())
+                    //{
                         IConfigurationRoot builtConfig = config.Build();
 
                         using X509Store store = new (StoreLocation.CurrentUser);
@@ -45,7 +45,7 @@ namespace GrowattMonitor
                         //    builtConfig["AZUREADAPPLICATIONID"],
                        //     certs.OfType<X509Certificate2>().Single());
 
-                    }
+                    //}
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
