@@ -1,4 +1,4 @@
-namespace GrowattMonitorShared;
+namespace GrowattMonitor.Models;
 
 public interface IInverterValue
 {

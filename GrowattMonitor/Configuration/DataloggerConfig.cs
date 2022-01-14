@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace GrowattMonitorShared;
+namespace GrowattMonitor.Configuration;
 
 public class DataloggerConfig
 {

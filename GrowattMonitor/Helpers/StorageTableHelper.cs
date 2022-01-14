@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Azure.Data.Tables;
+﻿using Azure.Data.Tables;
 
 
-namespace GrowattMonitorShared;
+namespace GrowattMonitor;
 
 public class StorageTableHelper
 {

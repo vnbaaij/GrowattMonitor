@@ -1,13 +1,8 @@
-﻿using Azure;
+﻿using System.Text;
+using Azure;
 using Azure.Data.Tables;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
 
-namespace GrowattMonitorShared;
+namespace GrowattMonitor.Models;
 
 public class Telegram : ITableEntity
 {

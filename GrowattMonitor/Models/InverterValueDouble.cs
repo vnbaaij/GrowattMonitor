@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GrowattMonitorShared;
+﻿namespace GrowattMonitor.Models;
 
 public class InverterValueDouble : IInverterValue<double>
 {

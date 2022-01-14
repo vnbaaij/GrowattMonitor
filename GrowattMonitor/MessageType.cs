@@ -1,4 +1,4 @@
-﻿namespace GrowattMonitorShared;
+﻿namespace GrowattMonitor;
 
 // These are not produced by Growatt ShineWiFi I have
 //ANNOUNCE50 = 0x5003,

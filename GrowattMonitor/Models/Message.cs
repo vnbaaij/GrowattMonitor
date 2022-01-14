@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using System.Text;
+using GrowattMonitor.Configuration;
 using MonitorUtils;
 
-namespace GrowattMonitorShared;
+namespace GrowattMonitor.Models;
 
 public class Message
 {
