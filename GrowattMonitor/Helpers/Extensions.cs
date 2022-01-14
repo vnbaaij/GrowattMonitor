@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
 using GrowattMonitor.Models;
 
-namespace GrowattMonitor;
+namespace GrowattMonitor.Helpers;
 
 public static class ByteArrayExtensions
 {
