@@ -1,5 +1,6 @@
 using System.Text;
 using GrowattMonitor.Configuration;
+using GrowattMonitor.Helpers;
 using Microsoft.Extensions.Options;
 
 namespace GrowattMonitor;

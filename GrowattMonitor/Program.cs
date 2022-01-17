@@ -8,8 +8,6 @@ IHost host = Host.CreateDefaultBuilder(args)
     .UseSystemd()
     .ConfigureAppConfiguration((hostContext, config) =>
     {
-        //if (hostContext.HostingEnvironment.IsProduction())
-        //{
         IConfigurationRoot builtConfig = config.Build();
 
         using X509Store store = new(StoreLocation.CurrentUser);
@@ -25,12 +23,6 @@ IHost host = Host.CreateDefaultBuilder(args)
 
 
         store.Close();
-
-        //config.AddAzureKeyVault(new System.Uri($"https://{builtConfig["KEYVAULTNAME"]}.vault.azure.net/"),
-        //    builtConfig["AZUREADAPPLICATIONID"],
-        //     certs.OfType<X509Certificate2>().Single());
-
-        //}
     })
     .ConfigureServices((hostContext, services) =>
     {

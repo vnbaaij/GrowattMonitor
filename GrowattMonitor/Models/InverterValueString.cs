@@ -1,4 +1,6 @@
-﻿namespace GrowattMonitor.Models;
+﻿using GrowattMonitor.Helpers;
+
+namespace GrowattMonitor.Models;
 
 public class InverterValueString : IInverterValue<string>
 {

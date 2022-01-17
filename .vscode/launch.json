@@ -18,7 +18,7 @@
                 "pipeArgs": [
                     "pi@raspberrypi4"
                 ],
-                "debuggerPath": "~/.vsdbg/vsdbg"
+                "debuggerPath": "~/vsdbg/vsdbg"
             },
             "env": {
                 "DOTNET_ENVIRONMENT" : "Development"
@@ -41,7 +41,7 @@
                 "pipeArgs": [
                     "pi@raspberrypi4"
                 ],
-                "debuggerPath": "~/.vsdbg/vsdbg"
+                "debuggerPath": "~/vsdbg/vsdbg"
             },
             "env": {
                 "DOTNET_ENVIRONMENT" : "Development"
