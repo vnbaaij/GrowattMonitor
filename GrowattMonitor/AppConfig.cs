@@ -1,6 +1,3 @@
-using System;
-using System.IO.Ports;
-
 namespace GrowattMonitor.Configuration
 {
     public class AppConfig

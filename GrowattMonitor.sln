@@ -1,19 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29618.158
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32113.165
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrowattMonitor", "GrowattMonitor\GrowattMonitor.csproj", "{49680F1C-50C1-41A3-B8A3-006A4441E72E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{377D190E-FECC-489C-A51A-7469D8512D0D} = {377D190E-FECC-489C-A51A-7469D8512D0D}
-	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestInverter", "TestInverter\TestInverter.csproj", "{9C906E06-0127-40F0-A11B-0F82A25CD98B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{377D190E-FECC-489C-A51A-7469D8512D0D} = {377D190E-FECC-489C-A51A-7469D8512D0D}
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Systemd", "Systemd", "{307F240E-EA92-4CB9-A3A2-F26ABAEAEDFD}"
+	ProjectSection(SolutionItems) = preProject
+		GrowattMonitor\systemd\GrowattMonitor.service = GrowattMonitor\systemd\GrowattMonitor.service
+		GrowattMonitor\systemd\GrowattMonitor.timer = GrowattMonitor\systemd\GrowattMonitor.timer
+		GrowattMonitor\systemd\GrowattMonitorStop.service = GrowattMonitor\systemd\GrowattMonitorStop.service
+		GrowattMonitor\systemd\GrowattMonitorStop.timer = GrowattMonitor\systemd\GrowattMonitorStop.timer
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrowattMonitorShared", "MonitorShared\GrowattMonitorShared.csproj", "{377D190E-FECC-489C-A51A-7469D8512D0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +23,6 @@ Global
 		{49680F1C-50C1-41A3-B8A3-006A4441E72E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49680F1C-50C1-41A3-B8A3-006A4441E72E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49680F1C-50C1-41A3-B8A3-006A4441E72E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9C906E06-0127-40F0-A11B-0F82A25CD98B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C906E06-0127-40F0-A11B-0F82A25CD98B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C906E06-0127-40F0-A11B-0F82A25CD98B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C906E06-0127-40F0-A11B-0F82A25CD98B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{377D190E-FECC-489C-A51A-7469D8512D0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{377D190E-FECC-489C-A51A-7469D8512D0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{377D190E-FECC-489C-A51A-7469D8512D0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{377D190E-FECC-489C-A51A-7469D8512D0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
