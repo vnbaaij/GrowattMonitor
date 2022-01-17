@@ -1,7 +1,6 @@
-﻿using System.Net.Sockets;
-using System.Text;
+﻿using System.Text;
 
-namespace GrowattMonitor;
+namespace GrowattMonitor.Helpers;
 
 public static class Utils
 {
