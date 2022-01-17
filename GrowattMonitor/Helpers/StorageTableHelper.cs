@@ -1,7 +1,7 @@
 ﻿using Azure.Data.Tables;
 
 
-namespace GrowattMonitor;
+namespace GrowattMonitor.Helpers;
 
 public class StorageTableHelper
 {
