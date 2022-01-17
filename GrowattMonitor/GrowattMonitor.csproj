@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-	<TargetFramework>net6.0</TargetFramework>
-	<UserSecretsId>6936C2FF-CBD2-41E1-940A-D33F003B693B</UserSecretsId>
-	<Nullable>enable</Nullable>
-	<ImplicitUsings>enable</ImplicitUsings>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>6936C2FF-CBD2-41E1-940A-D33F003B693B</UserSecretsId>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -12,19 +11,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="systemd\**" />
-    <Content Remove="systemd\**" />
-    <EmbeddedResource Remove="systemd\**" />
-    <None Remove="systemd\**" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.1" />
+    <PackageReference Include="Azure.Identity" Version="1.5.0" />
+    <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />
+    <PackageReference Include="MonitorUtils" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.1" />
-	<PackageReference Include="Azure.Identity" Version="1.5.0" />
-	<PackageReference Include="Azure.Data.Tables" Version="12.4.0" />
-	<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
-	<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
-	<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />
-	<PackageReference Include="MonitorUtils" Version="3.0.0" />
+    <ProjectReference Include="..\MonitorShared\GrowattMonitorShared.csproj" />
   </ItemGroup>
 </Project>

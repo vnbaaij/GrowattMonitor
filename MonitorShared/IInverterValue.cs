@@ -1,20 +1,25 @@
-namespace GrowattMonitorShared;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-public interface IInverterValue
+namespace GrowattMonitorShared
 {
-    public string Name { get; set; }
-    public int Length { get; set; }
-    public string Description { get; set; } 
-    
-    public byte[] Remaining { get; set; }
+    public interface IInverterValue
+    {
+        public string Name { get; set; }
+        public int Length { get; set; }
+        public string Description { get; set; } 
+        
+        public byte[] Remaining { get; set; }
 
-    public object GetFromBuffer(byte[] buffer);
+        public object GetFromBuffer(byte[] buffer);
 
-}
-public interface IInverterValue<T> : IInverterValue
-{
-   
-    public T Value  { get; set; }
+    }
+    public interface IInverterValue<T> : IInverterValue
+    {
+       
+        public T Value  { get; set; }
 
-    public new T GetFromBuffer(byte[] buffer);
+        public new T GetFromBuffer(byte[] buffer);
+    }
 }

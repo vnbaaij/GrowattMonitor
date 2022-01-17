@@ -3,42 +3,43 @@ using System.Threading.Tasks;
 using Azure.Data.Tables;
 
 
-namespace GrowattMonitorShared;
-
-public class StorageTableHelper
+namespace GrowattMonitorShared
 {
-
-    private readonly string? _storageConnectionString;
-
-    public StorageTableHelper() { }
-
-    public StorageTableHelper(string storageConnectionString)
+    public class StorageTableHelper
     {
-        _storageConnectionString = storageConnectionString;
-    }
 
+        private string _storageConnectionString;
 
-    public async Task<TableClient> GetTableAsync(string tablename)
-    {
-        Console.Write("Checking storage...");
+        public StorageTableHelper() { }
 
-        var serviceClient = new TableServiceClient(_storageConnectionString);
-
-        var result = await serviceClient.CreateTableIfNotExistsAsync(tablename);
-
-        if (result != null)
+        public StorageTableHelper(string storageConnectionString)
         {
-            Console.WriteLine("table '{0}' created", tablename);
-        }
-        else
-        {
-            Console.WriteLine("table '{0}' exists", tablename);
+            _storageConnectionString = storageConnectionString;
         }
 
-        var table = serviceClient.GetTableClient(tablename);
+
+        public async Task<TableClient> GetTableAsync(string tablename)
+        {
+            Console.Write("Checking storage...");
+
+            var serviceClient = new TableServiceClient(_storageConnectionString);
+
+            var result = await serviceClient.CreateTableIfNotExistsAsync(tablename);
+
+            if (result != null)
+            {
+                Console.WriteLine("table '{0}' created", tablename);
+            }
+            else
+            {
+                Console.WriteLine("table '{0}' exists", tablename);
+            }
+
+            var table = serviceClient.GetTableClient(tablename);
 
 
 
-        return table;
+            return table;
+        }
     }
 }
