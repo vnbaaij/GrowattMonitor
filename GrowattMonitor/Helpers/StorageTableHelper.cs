@@ -1,12 +1,13 @@
-﻿using Azure.Data.Tables;
-
+﻿using Azure;
+using Azure.Data.Tables;
+using Azure.Data.Tables.Models;
 
 namespace GrowattMonitor.Helpers;
 
 public class StorageTableHelper
 {
 
-    private string _storageConnectionString;
+    private readonly string _storageConnectionString;
 
     public StorageTableHelper() { }
 
@@ -20,9 +21,9 @@ public class StorageTableHelper
     {
         Console.Write("Checking storage...");
 
-        var serviceClient = new TableServiceClient(_storageConnectionString);
+        TableServiceClient serviceClient = new (_storageConnectionString);
 
-        var result = await serviceClient.CreateTableIfNotExistsAsync(tablename);
+        Response<TableItem> result = await serviceClient.CreateTableIfNotExistsAsync(tablename);
 
         if (result != null)
         {
@@ -33,8 +34,7 @@ public class StorageTableHelper
             Console.WriteLine("table '{0}' exists", tablename);
         }
 
-        var table = serviceClient.GetTableClient(tablename);
-
+        TableClient table = serviceClient.GetTableClient(tablename);
 
 
         return table;

@@ -94,7 +94,7 @@ public class Telegram : ITableEntity
         }
     }
 
-    public List<IInverterValue> GetDataList()
+    public static List<IInverterValue> GetDataList()
     {
         return new List<IInverterValue> {
             new InverterValueInt("InvStat", "", "Inverter run state"),

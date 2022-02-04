@@ -19,20 +19,20 @@ public sealed class SunTimes
 {
     #region Private Data Members
 
-    private object mLock = new object();
+    private readonly object mLock = new();
 
     private const double mDR = Math.PI / 180;
     private const double mK1 = 15 * mDR * 1.0027379;
 
-    private int[] mRiseTimeArr = new int[2] { 0, 0 };
-    private int[] mSetTimeArr = new int[2] { 0, 0 };
-    private double mRizeAzimuth = 0.0;
-    private double mSetAzimuth = 0.0;
+    private readonly int[] mRiseTimeArr = new int[2] { 0, 0 };
+    private readonly int[] mSetTimeArr = new int[2] { 0, 0 };
+    //private double mRizeAzimuth = 0.0;
+    //private double mSetAzimuth = 0.0;
 
-    private double[] mSunPositionInSkyArr = new double[2] { 0.0, 0.0 };
-    private double[] mRightAscentionArr = new double[3] { 0.0, 0.0, 0.0 };
-    private double[] mDecensionArr = new double[3] { 0.0, 0.0, 0.0 };
-    private double[] mVHzArr = new double[3] { 0.0, 0.0, 0.0 };
+    private readonly double[] mSunPositionInSkyArr = new double[2] { 0.0, 0.0 };
+    private readonly double[] mRightAscentionArr = new double[3] { 0.0, 0.0, 0.0 };
+    private readonly double[] mDecensionArr = new double[3] { 0.0, 0.0, 0.0 };
+    private readonly double[] mVHzArr = new double[3] { 0.0, 0.0, 0.0 };
 
     private bool mIsSunrise = false;
     private bool mIsSunset = false;
@@ -41,7 +41,7 @@ public sealed class SunTimes
 
     #region Singleton
 
-    private static readonly SunTimes mInstance = new SunTimes();    // The singleton instance
+    private static readonly SunTimes mInstance = new();    // The singleton instance
 
     private SunTimes() { }
 
@@ -155,7 +155,7 @@ public sealed class SunTimes
                 return false;
             }
 
-            lon = lon / 360;
+            lon /= 360;
             double tz = zone / 24;
             double ct = jd / 36525 + 1;                                 // centuries since 1900.0
             double t0 = LocalSiderealTimeForTimeZone(lon, jd, tz);      // local sidereal time
@@ -188,7 +188,7 @@ public sealed class SunTimes
             {
                 mRightAscentionArr[2] = ra0 + (k + 1) * (ra1 - ra0) / 24;
                 mDecensionArr[2] = dec0 + (k + 1) * (dec1 - dec0) / 24;
-                mVHzArr[2] = TestHour(k, zone, t0, lat);
+                mVHzArr[2] = TestHour(k, t0, lat);
 
                 // advance to next hour
                 mRightAscentionArr[0] = mRightAscentionArr[2];
@@ -227,9 +227,9 @@ public sealed class SunTimes
 
     #region Private Methods
 
-    private int Sign(double value)
+    private static int Sign(double value)
     {
-        int rv = 0;
+        int rv;
 
         if (value > 0.0) rv = 1;
         else if (value < 0.0) rv = -1;
@@ -239,32 +239,32 @@ public sealed class SunTimes
     }
 
     // Local Sidereal Time for zone
-    private double LocalSiderealTimeForTimeZone(double lon, double jd, double z)
+    private static double LocalSiderealTimeForTimeZone(double lon, double jd, double z)
     {
         double s = 24110.5 + 8640184.812999999 * jd / 36525 + 86636.6 * z + 86400 * lon;
-        s = s / 86400;
-        s = s - Math.Floor(s);
+        s /= 86400;
+        s -= Math.Floor(s);
         return s * 360 * mDR;
     }
 
     // determine Julian day from calendar date
     // (Jean Meeus, "Astronomical Algorithms", Willmann-Bell, 1991)
-    private double GetJulianDay(DateTime date)
+    private static double GetJulianDay(DateTime date)
     {
         int month = date.Month;
         int day = date.Day;
         int year = date.Year;
 
-        bool gregorian = (year < 1583) ? false : true;
+        bool gregorian = year >= 1583;
 
         if ((month == 1) || (month == 2))
         {
-            year = year - 1;
-            month = month + 12;
+            year--;
+            month += 12;
         }
 
         double a = Math.Floor((double)year / 100);
-        double b = 0;
+        double b;
 
         if (gregorian)
             b = 2 - a + Math.Floor(a / 4);
@@ -285,27 +285,27 @@ public sealed class SunTimes
         double g, lo, s, u, v, w;
 
         lo = 0.779072 + 0.00273790931 * jd;
-        lo = lo - Math.Floor(lo);
+        lo -= Math.Floor(lo);
         lo = lo * 2 * Math.PI;
 
         g = 0.993126 + 0.0027377785 * jd;
-        g = g - Math.Floor(g);
+        g -= Math.Floor(g);
         g = g * 2 * Math.PI;
 
         v = 0.39785 * Math.Sin(lo);
-        v = v - 0.01 * Math.Sin(lo - g);
-        v = v + 0.00333 * Math.Sin(lo + g);
-        v = v - 0.00021 * ct * Math.Sin(lo);
+        v -= 0.01 * Math.Sin(lo - g);
+        v += 0.00333 * Math.Sin(lo + g);
+        v -= 0.00021 * ct * Math.Sin(lo);
 
         u = 1 - 0.03349 * Math.Cos(g);
-        u = u - 0.00014 * Math.Cos(2 * lo);
-        u = u + 0.00008 * Math.Cos(lo);
+        u -= 0.00014 * Math.Cos(2 * lo);
+        u += 0.00008 * Math.Cos(lo);
 
         w = -0.0001 - 0.04129 * Math.Sin(2 * lo);
-        w = w + 0.03211 * Math.Sin(g);
-        w = w + 0.00104 * Math.Sin(2 * lo - g);
-        w = w - 0.00035 * Math.Sin(2 * lo + g);
-        w = w - 0.00008 * ct * Math.Sin(g);
+        w += 0.03211 * Math.Sin(g);
+        w += 0.00104 * Math.Sin(2 * lo - g);
+        w -= 0.00035 * Math.Sin(2 * lo + g);
+        w -= 0.00008 * ct * Math.Sin(g);
 
         // compute sun's right ascension
         s = w / Math.Sqrt(u - v * v);
@@ -317,13 +317,13 @@ public sealed class SunTimes
     }
 
     // test an hour for an event
-    private double TestHour(int k, double zone, double t0, double lat)
+    private double TestHour(int k, double t0, double lat)
     {
         double[] ha = new double[3];
         double a, b, c, d, e, s, z;
         double time;
         int hr, min;
-        double az, dz, hz, nz;
+        //double az, dz, hz, nz;
 
         ha[0] = t0 - mRightAscentionArr[0] + k * mK1;
         ha[2] = t0 - mRightAscentionArr[2] + k * mK1 + mK1;
@@ -363,17 +363,17 @@ public sealed class SunTimes
         hr = (int)Math.Floor(time);
         min = (int)Math.Floor((time - hr) * 60);
 
-        hz = ha[0] + e * (ha[2] - ha[0]);                 // azimuth of the sun at the event
-        nz = -Math.Cos(mDecensionArr[1]) * Math.Sin(hz);
-        dz = c * Math.Sin(mDecensionArr[1]) - s * Math.Cos(mDecensionArr[1]) * Math.Cos(hz);
-        az = Math.Atan2(nz, dz) / mDR;
-        if (az < 0) az = az + 360;
+        //hz = ha[0] + e * (ha[2] - ha[0]);                 // azimuth of the sun at the event
+        //nz = -Math.Cos(mDecensionArr[1]) * Math.Sin(hz);
+        //dz = c * Math.Sin(mDecensionArr[1]) - s * Math.Cos(mDecensionArr[1]) * Math.Cos(hz);
+        //az = Math.Atan2(nz, dz) / mDR;
+        //if (az < 0) az += 360;
 
         if ((mVHzArr[0] < 0) && (mVHzArr[2] > 0))
         {
             mRiseTimeArr[0] = hr;
             mRiseTimeArr[1] = min;
-            mRizeAzimuth = az;
+            //mRizeAzimuth = az;
             mIsSunrise = true;
         }
 
@@ -381,7 +381,7 @@ public sealed class SunTimes
         {
             mSetTimeArr[0] = hr;
             mSetTimeArr[1] = min;
-            mSetAzimuth = az;
+            //mSetAzimuth = az;
             mIsSunset = true;
         }
 

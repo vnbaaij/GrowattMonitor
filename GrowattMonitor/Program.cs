@@ -1,15 +1,17 @@
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
-using GrowattMonitor.Configuration;
 using GrowattMonitor;
+using GrowattMonitor.Configuration;
+using GrowattMonitor.Helpers;
+using GrowattMonitor.Models;
+using GrowattMonitor.Services;
+
 using System.Security.Cryptography.X509Certificates;
 
 IHost host = Host.CreateDefaultBuilder(args)
     .UseSystemd()
     .ConfigureAppConfiguration((hostContext, config) =>
     {
-        //if (hostContext.HostingEnvironment.IsProduction())
-        //{
         IConfigurationRoot builtConfig = config.Build();
 
         using X509Store store = new(StoreLocation.CurrentUser);
@@ -25,12 +27,6 @@ IHost host = Host.CreateDefaultBuilder(args)
 
 
         store.Close();
-
-        //config.AddAzureKeyVault(new System.Uri($"https://{builtConfig["KEYVAULTNAME"]}.vault.azure.net/"),
-        //    builtConfig["AZUREADAPPLICATIONID"],
-        //     certs.OfType<X509Certificate2>().Single());
-
-        //}
     })
     .ConfigureServices((hostContext, services) =>
     {
@@ -38,7 +34,20 @@ IHost host = Host.CreateDefaultBuilder(args)
 
         services.Configure<AppConfig>(hostContext.Configuration.GetSection("Configuration"));
         services.AddSingleton<InverterMonitor>();
-        services.AddHostedService<GrowattWorker>();
+        //services.AddSingleton<InverterMonitorMock>();
+
+        //services.AddCronJob<TestJob>(c =>
+        //{
+        //     c.TimeZoneInfo = TimeZoneInfo.Local;
+        //     c.CronExpression = @"*/15 * 7-17 * * *";
+        //});
+
+        services.AddCronJob<GrowattWorkerJob>(c =>
+        {
+            c.TimeZoneInfo = TimeZoneInfo.Local;
+            c.CronExpression = @"0 */1 7-21 * * *";
+        });
+
     })
     .Build();
 

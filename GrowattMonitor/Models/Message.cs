@@ -193,7 +193,7 @@ public class Message
 
     private Dictionary<string, object> DecodeAnnounce()
     {
-        Dictionary<string, object> result = new Dictionary<string, object>(12);
+        Dictionary<string, object> result = new(12);
         if (Version == 5)
         {
             //2id/2version/2length/2type/10datalogger/10inverter/29jib1/5build/22jib2/10inverteralias/5model/62jib3/16make/9version/*jib3
@@ -240,7 +240,7 @@ public class Message
 
     private Dictionary<string, object> DecodePing()
     {
-        Dictionary<string, object> result = new Dictionary<string, object>(2)
+        Dictionary<string, object> result = new(2)
         {
             { "id", Id },
             { "datalogger", Content[8..^2] }
@@ -286,7 +286,7 @@ public class Message
     public Dictionary<string, object> DecodeIdentifyRequest()
     {
         //2id/2version/2length/2type/10datalogger/2first/2last
-        Dictionary<string, object> result = new Dictionary<string, object>(3)
+        Dictionary<string, object> result = new(3)
         {
             { "datalogger", Content[8..18] },
             { "first", BitConverter.ToUInt16(Body[^4..^2].ReverseWhenLittleEndian()) },
@@ -342,7 +342,7 @@ public class Message
         if (showBytesInDump)
         {
             _logger.LogDebug("CRC: {crc0:X2} {crc1:X2}\n", crc[0], crc[1]);
-            _logger.LogDebug(lines.ToString());
+            _logger.LogDebug("{lines}", lines.ToString());
         }
         else
         {
@@ -350,11 +350,11 @@ public class Message
         }
     }
 
-    private StringBuilder GetLines(byte[] bytes)
+    private static StringBuilder GetLines(byte[] bytes)
     {
         int c = 0;
         string sbytes = "";
-        StringBuilder lines = new StringBuilder();
+        StringBuilder lines = new();
         // Start with line counter
         string hex = c.ToString("D4") + ": ";
         foreach (byte b in bytes)

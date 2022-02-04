@@ -22,7 +22,7 @@ public class GrowattWorker : BackgroundService
     }
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"GrowattMonitor started at: {DateTimeOffset.Now}");
+        _logger.LogInformation("GrowattMonitor started at: {time}", DateTimeOffset.Now);
 
         await base.StartAsync(cancellationToken);
     }

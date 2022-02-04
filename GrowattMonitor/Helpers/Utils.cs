@@ -1,17 +1,15 @@
-﻿using System.Net.Sockets;
-using System.Text;
-using GrowattMonitor.Models;
+﻿using System.Text;
 
 namespace GrowattMonitor.Helpers;
 
 public static class Utils
 {
-    public static DateTime riseTime = DateTime.MinValue;
-    public static DateTime setTime = DateTime.MinValue;
+    private static DateTime riseTime = DateTime.MinValue;
+    private static DateTime setTime = DateTime.MinValue;
 
     public static string ByteArrayToString(byte[] ba)
     {
-        StringBuilder hex = new StringBuilder(ba.Length * 2);
+        StringBuilder hex = new(ba.Length * 2);
         foreach (byte b in ba)
             hex.AppendFormat("{0:x4}", b);
         return hex.ToString();
@@ -38,14 +36,14 @@ public static class Utils
         return array;
     }
 
-    public static bool IsDaylight(double latitude, double longitude)
+    public static bool IsDaylight(double latitude, double longitude, int offset)
     {
-        //return true;
-        // riseTime and setTime already calculated, so now is in daylight range
-        if (riseTime > DateTime.MinValue && setTime > DateTime.MinValue)
-            return true;
-
         DateTime currentTime = DateTime.Now;
+
+        // riseTime and setTime already calculated and current time is in between => in daylight range
+        if (riseTime > DateTime.MinValue && setTime > DateTime.MinValue && currentTime >= riseTime && currentTime <= setTime)
+            return true;
+        
         bool isSunrise = false, isSunset = false;
 
         var result = SunTimes.Instance.CalculateSunRiseSetTimes(latitude, longitude, DateTime.Now.Date, ref riseTime, ref setTime, ref isSunrise, ref isSunset);
@@ -61,8 +59,8 @@ public static class Utils
         Console.WriteLine($"Today is {DateTime.Now.Date:dd-MM-yyyy}, sunrise @ {riseTime:HH:mm:ss}, sunset @ {setTime:HH:mm:ss}");
 
         // account for calculation discrepancies
-        riseTime = riseTime.AddMinutes(-20);
-        setTime = setTime.AddMinutes(20);
+        riseTime = riseTime.AddMinutes(offset);
+        setTime = setTime.AddMinutes(-offset);
 
         if (currentTime >= riseTime && currentTime <= setTime)
             return true;
@@ -74,53 +72,4 @@ public static class Utils
             return false;
         }
     }
-}
-
-public static class ByteArrayExtensions
-{
-    public static byte[] ReverseWhenLittleEndian(this byte[] array)
-    {
-
-        if (BitConverter.IsLittleEndian)
-        {
-            Array.Reverse(array);
-        }
-        return array;
-    }
-}
-
-public static class SocketExtensions
-{
-    public static async Task<Socket> AcceptSocketAsync(this TcpListener listener, CancellationToken token)
-    {
-        Socket t = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        try
-        {
-            t = await listener.AcceptSocketAsync();
-        }
-        catch (Exception ex) when (token.IsCancellationRequested)
-        {
-            throw new OperationCanceledException("Cancellation was requested while awaiting TCP client connection.", ex);
-        }
-        return t;
-    }
-}
-
-public static class TelegramExtensions
-{
-    public static int GetMonth(this Telegram telegram, string prefix)
-    {
-        return int.Parse(telegram.RowKey.Substring(4, 2));
-    }
-
-    public static int GetYear(this Telegram telegram, string prefix)
-    {
-        return int.Parse(telegram.RowKey.Substring(0, 4));
-    }
-
-    public static string GetTablename(this Telegram telegram, string prefix)
-    {
-        return prefix + telegram.RowKey.Substring(0, 6);
-    }
-
 }

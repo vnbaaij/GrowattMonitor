@@ -15,15 +15,16 @@ public class InverterMonitor
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<InverterMonitor> _logger;
-    private readonly AppConfig _appConfig;
+    private readonly AppConfig _config;
     private readonly StorageTableHelper _storageTableHelper;
-    //private CloudTable _table;
+
     private TableClient _table;
 
     private static Socket _inverterSocket = null;
     private static Socket _serverSocket = null;
 
-    private static CancellationTokenSource _cancellation;
+    private readonly CancellationTokenSource _cancellation;
+    //private static CancellationToken _cancellationToken;
 
     private byte[] _datalogger;
     private bool _listenToInverter = true;
@@ -36,30 +37,30 @@ public class InverterMonitor
     public List<DataloggerConfig> Config { get; set; } = new List<DataloggerConfig>();
 
 
-    public InverterMonitor(ILoggerFactory loggerFactory, ILogger<InverterMonitor> logger, IOptions<AppConfig> appConfig)
+    public InverterMonitor(ILoggerFactory loggerFactory, ILogger<InverterMonitor> logger, IOptions<AppConfig> config)
     {
         _loggerFactory = loggerFactory;
         _logger = logger;
-        _appConfig = appConfig.Value;
+        _config = config.Value;
 
-        _logger.LogDebug("StorrageConnectionString: {StorageConnectionstring}", _appConfig.StorageConnectionstring);
+        _logger.LogDebug("StorrageConnectionString: {StorageConnectionstring}", _config.StorageConnectionstring);
 
-        _storageTableHelper = new StorageTableHelper(_appConfig.StorageConnectionstring);
+        _storageTableHelper = new StorageTableHelper(_config.StorageConnectionstring);
+        _cancellation = new();
     }
 
     public async Task Run()
     {
-        IPAddress ip = IPAddress.Parse(_appConfig.DataloggerReceiverAddress);
+        _logger.LogInformation("Monitor running...");
+
+        IPAddress ip = IPAddress.Parse(_config.DataloggerReceiverAddress);
 
         // Start listening for client requests.
-        TcpListener listener = new TcpListener(ip, _appConfig.DataloggerReceiverPort);
+        TcpListener listener = new(ip, _config.DataloggerReceiverPort);
         listener.Start();
 
-        _cancellation = new CancellationTokenSource();
-        _logger.LogInformation("Monitor started...");
-
         // Enter the listening loop.
-        while (Utils.IsDaylight(_appConfig.Latitude, _appConfig.Longitude) && !_cancellation.Token.IsCancellationRequested)
+        while (IsDayLight() && !_cancellation.IsCancellationRequested)
         {
             try
             {
@@ -75,8 +76,14 @@ public class InverterMonitor
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception in monitor while running: ");
-                _cancellation.Cancel(false);
+                _cancellation.Cancel();
             }
+        }
+              
+
+        if (!IsDayLight())
+        {
+            _logger.LogInformation("Outside of daylight period...");
         }
         _logger.LogInformation("Monitor stopped...");
 
@@ -90,6 +97,11 @@ public class InverterMonitor
         // Stop listening for new clients.
         listener.Stop();
 
+        
+    }
+    private bool IsDayLight()
+    {
+        return Utils.IsDaylight(_config.Latitude, _config.Longitude, _config.Offset); 
     }
 
     private async Task<Socket> ConnectSocket(Socket socket, TcpListener listener = null)
@@ -98,21 +110,21 @@ public class InverterMonitor
             // Everything is awesome!
             return socket;
 
-        if (listener == null && !_appConfig.ActAsProxy)
+        if (listener == null && !_config.ActAsProxy)
             return null;
 
         string host;
         int port;
         if (listener != null)
         {
-            host = _appConfig.DataloggerReceiverAddress;
-            port = _appConfig.DataloggerReceiverPort;
+            host = _config.DataloggerReceiverAddress;
+            port = _config.DataloggerReceiverPort;
             _logger.LogInformation("==> Waiting for inverter to connect to proxy ({host}:{port})... ", host, port);
         }
         else
         {
-            host = _appConfig.GrowattServerAddress;
-            port = _appConfig.GrowattServerPort;
+            host = _config.GrowattServerAddress;
+            port = _config.GrowattServerPort;
             _logger.LogInformation("==> Waiting for proxy to connect to server ({host}:{port})... ", host, port);
         }
 
@@ -140,6 +152,11 @@ public class InverterMonitor
                     await socket.ConnectAsync(host, port);
 
             _logger.LogInformation("...connection established");
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogError("Connect socket canceled!");
+            _listenToInverter = true;
         }
         catch (Exception ex)
         {
@@ -170,11 +187,11 @@ public class InverterMonitor
             else
                 i = _serverSocket.Receive(bytes, SocketFlags.None);
         }
-        // catch (OperationCanceledException)
-        // {
-        //     Console.WriteLine("Canceled!");
-        //     return null;
-        // }
+        catch (OperationCanceledException)
+        {
+            _logger.LogDebug("Receive bytes canceled!");
+            return null;
+        }
         catch (SocketException e)
         {
             if (e.SocketErrorCode == SocketError.TimedOut)
@@ -186,7 +203,7 @@ public class InverterMonitor
                 //    _cancellation.Cancel(true);
                 //}
 
-                //If there is a timeout just fall back to listening to inverter as it will always restart comminications from that side
+                //If there is a timeout just fall back to listening to inverter as it will always restart communications from that side
 
                 _listenToInverter = true;
                 return null;
@@ -203,6 +220,7 @@ public class InverterMonitor
         {
             // Process the data sent by the client.
             var msg = Message.CreateFromByteBuffer(buffer, _loggerFactory);
+            //var msg = new Message(buffer);
 
             // When in IDENTIFY loop, keep listening to inverter
             _inIdentifyLoop = false;
@@ -222,7 +240,7 @@ public class InverterMonitor
             else
                 source = "SERVER";
 
-            msg.Dump($"FROM {source}", _appConfig.ShowBytesInDump);
+            msg.Dump($"FROM {source}", _config.ShowBytesInDump);
 
             Message reply = null;
 
@@ -254,7 +272,7 @@ public class InverterMonitor
             if (!_inIdentifyLoop)
                 _listenToInverter = false;
 
-            sendMessage = _appConfig.ActAsProxy;
+            sendMessage = _config.ActAsProxy;
         }
         else
         {
@@ -307,13 +325,13 @@ public class InverterMonitor
     {
         if (_listenToInverter)
         {
-            Console.WriteLine($"==> Received ping from {Display(data["datalogger"])}");
+            _logger.LogInformation("==> Received ping from {id}", Display(data["datalogger"]));
             if (_datalogger == null)
                 _datalogger = (byte[])data["datalogger"];
         }
 
         // Send Identify
-        if (!_appConfig.ActAsProxy)
+        if (!_config.ActAsProxy)
         {
             SendIdentify();
         }
@@ -410,9 +428,9 @@ public class InverterMonitor
                 await StoreTelegram(telegram);
             }
 
-            if (telegram?.InvStat == 0 && msg.Type == MessageType.CURRDATA)
+            if (telegram.InvStat == 0 && msg.Type == MessageType.CURRDATA)
             {
-                _cancellation.Cancel(true);
+                _cancellation.Cancel();
             }
         }
 
@@ -438,13 +456,13 @@ public class InverterMonitor
     {
         if (telegram == null)
         {
-            throw new ArgumentNullException("telegram");
+            throw new ArgumentNullException(nameof(telegram));
         }
 
         telegram.Dump();
 
         // Create or reference an existing table
-        string tablename = telegram.GetTablename(_appConfig.TablenamePrefix);
+        string tablename = telegram.GetTablename(_config.TablenamePrefix);
         if (prevTablename != tablename)
         {
             _table = await _storageTableHelper.GetTableAsync(tablename);
@@ -465,7 +483,7 @@ public class InverterMonitor
         }
     }
 
-    private string Display(Object data)
+    private static string Display(object data)
     {
         return Encoding.Default.GetString((byte[])data);
     }

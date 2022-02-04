@@ -19,9 +19,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Helpers\SocketExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
 	<PackageReference Include="Azure.Data.Tables" Version="12.4.0" />
 	<PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.1" />
 	<PackageReference Include="Azure.Identity" Version="1.5.0" />
+	<PackageReference Include="Cronos" Version="0.7.1" />
 	<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
 	<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
 	<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />
