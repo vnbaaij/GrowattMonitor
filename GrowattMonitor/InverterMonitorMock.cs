@@ -14,54 +14,56 @@ namespace GrowattMonitor;
 
 public class InverterMonitorMock
 {
-    private readonly ILogger<InverterMonitor> _logger;
-    private readonly AppConfig _config;
+    private readonly ILogger<InverterMonitor> logger;
+    private readonly Utils utils;
+    private readonly AppConfig config;
     
 
     //private TableClient _table;
 
     private readonly CancellationTokenSource _cancellation;
 
-    public InverterMonitorMock(ILogger<InverterMonitor> logger, IOptions<AppConfig> config)
+    public InverterMonitorMock(ILogger<InverterMonitor> logger, IOptions<AppConfig> config, Utils utils)
     {
-        _logger = logger;
-        _config = config.Value;
+        this.logger = logger;
+        this.utils = utils;
+        this.config = config.Value;
 
-        _logger.LogDebug("StorrageConnectionString: {StorageConnectionstring}", _config.StorageConnectionstring);
+        this.logger.LogDebug("StorrageConnectionString: {StorageConnectionstring}", this.config.StorageConnectionstring);
 
         _cancellation = new();
     }
 
     public async Task Run()
     {
-        _logger.LogInformation("Mock running...");
+        logger.LogInformation("Mock running...");
 
         // Enter the listening loop.
-        while (IsDayLight() && !_cancellation.IsCancellationRequested)
+        while (utils.IsDaylight() && !_cancellation.IsCancellationRequested)
         {
             try
             {
                 //Simulate doing something
                 await Task.Delay(3000);
-                _logger.LogInformation("Mock done...");
+                logger.LogInformation("Mock done...");
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("Mock canceled!");
+                logger.LogWarning("Mock canceled!");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception in Mock while running: ");
+                logger.LogError(ex, "Exception in Mock while running: ");
                 _cancellation.Cancel();
             }
         }
 
 
-        if (!IsDayLight())
+        if (!utils.IsDaylight())
         {
-            _logger.LogInformation("Outside of daylight period...");
+            logger.LogInformation("Outside of daylight period...");
         }
-        _logger.LogInformation("Mock stopped...");
+        logger.LogInformation("Mock stopped...");
 
         //_cancellation.Cancel();
         
@@ -69,8 +71,5 @@ public class InverterMonitorMock
 
     }
 
-    private bool IsDayLight()
-    {
-        return Utils.IsDaylight(_config.Latitude, _config.Longitude, _config.Offset);
-    }
+    
 }

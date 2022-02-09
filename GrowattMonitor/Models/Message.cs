@@ -6,14 +6,14 @@ namespace GrowattMonitor.Models;
 
 public class Message
 {
-    private static ILoggerFactory _loggerFactory;
-    private static ILogger<Message> _logger;
+    private static ILoggerFactory loggerFactory;
+    private static ILogger<Message> logger;
 
     static Message()
     {
         //var factory = (ILoggerFactory)new LoggerFactory();
-        if (_loggerFactory != null)
-            _logger = _loggerFactory.CreateLogger<Message>();
+        if (loggerFactory != null)
+            logger = loggerFactory.CreateLogger<Message>();
     }
 
     public byte[] Content { get; private set; }
@@ -49,9 +49,9 @@ public class Message
 
     public static Message CreateFromByteBuffer(byte[] buffer, ILoggerFactory loggerFactory)
     {
-        _loggerFactory = loggerFactory;
-        if (_logger == null)
-            _logger = _loggerFactory.CreateLogger<Message>();
+        Message.loggerFactory = loggerFactory;
+        if (logger == null)
+            logger = Message.loggerFactory.CreateLogger<Message>();
 
         var message = new Message();
 
@@ -83,7 +83,7 @@ public class Message
             }
             else
             {
-                _logger.LogError("Invalid message, expected {Size}, got {Length}", message.Size, buffer.Length - 5);
+                logger.LogError("Invalid message, expected {Size}, got {Length}", message.Size, buffer.Length - 5);
                 message.Remaining = null;
             }
         }
@@ -185,7 +185,7 @@ public class Message
             case MessageType.CONFACK:
             //return DecodeConfAck();
             default:
-                _logger.LogError("Received unknown message type 0x{Type}", Type);
+                logger.LogError("Received unknown message type 0x{Type}", Type);
                 break;
         }
         return null;
@@ -235,7 +235,7 @@ public class Message
 
     private Telegram DecodeData()
     {
-        return new Telegram(Content, _loggerFactory);
+        return new Telegram(Content, loggerFactory);
     }
 
     private Dictionary<string, object> DecodePing()
@@ -337,16 +337,16 @@ public class Message
 
         // Header = 8 bytes, CRC = 2 bytes, Msg length = # of bytes - header (includes CRC)
         int msgLength = Content.Length - 8;
-        _logger.LogDebug("Message: {time}, {info}: {type} ({length})", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), info, Enum.GetName(typeof(MessageType), Type), msgLength);
+        logger.LogDebug("Message: {time}, {info}: {type} ({length})", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), info, Enum.GetName(typeof(MessageType), Type), msgLength);
 
         if (showBytesInDump)
         {
-            _logger.LogDebug("CRC: {crc0:X2} {crc1:X2}\n", crc[0], crc[1]);
-            _logger.LogDebug("{lines}", lines.ToString());
+            logger.LogDebug("CRC: {crc0:X2} {crc1:X2}\n", crc[0], crc[1]);
+            logger.LogDebug("{lines}", lines.ToString());
         }
         else
         {
-            _logger.LogDebug("\n");
+            logger.LogDebug("\n");
         }
     }
 

@@ -11,7 +11,7 @@ public class Telegram : ITableEntity
     public DateTimeOffset? Timestamp { get; set; }
     public ETag ETag { get; set; }
 
-    private readonly ILogger<Telegram> _logger;
+    private readonly ILogger<Telegram> logger;
 
     public string Datalogger { get; set; }
 
@@ -55,7 +55,7 @@ public class Telegram : ITableEntity
     {
         //var factory = (ILoggerFactory)new LoggerFactory();
 
-        _logger = loggerFactory.CreateLogger<Telegram>();
+        logger = loggerFactory.CreateLogger<Telegram>();
     }
 
     public Telegram()
@@ -142,15 +142,15 @@ public class Telegram : ITableEntity
         if (this == null)
             return;
 
-        _logger.LogDebug("==> Telegram data:");
-        _logger.LogDebug("Datalogger: {Datalogger}", Datalogger);
-        _logger.LogDebug("Inverter: {Inverter}", Inverter);
-        _logger.LogDebug("Timestamp: {RowKey}", RowKey);
+        logger.LogDebug("==> Telegram data:");
+        logger.LogDebug("Datalogger: {Datalogger}", Datalogger);
+        logger.LogDebug("Inverter: {Inverter}", Inverter);
+        logger.LogDebug("Timestamp: {RowKey}", RowKey);
 
         var classType = typeof(Telegram);
         foreach (var item in GetDataList())
         {
-            _logger.LogDebug("{name}: {value}", item.Name, classType.GetProperty(item.Name).GetValue(this));
+            logger.LogDebug("{name}: {value}", item.Name, classType.GetProperty(item.Name).GetValue(this));
         }
     }
 }

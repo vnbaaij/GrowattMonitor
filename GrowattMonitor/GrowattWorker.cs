@@ -7,22 +7,23 @@ namespace GrowattMonitor;
 
 public class GrowattWorker : BackgroundService
 {
-    private readonly ILogger<GrowattWorker> _logger;
-    private readonly InverterMonitor _monitor;
+    private readonly ILogger<GrowattWorker> logger;
+    private readonly InverterMonitor monitor;
+    private readonly Utils utils;
+    public readonly AppConfig config;
 
-    public readonly AppConfig _config;
+    public DateTime riseTime = DateTime.MinValue, setTime = DateTime.MinValue;
 
-    public DateTime _riseTime = DateTime.MinValue, _setTime = DateTime.MinValue;
-
-    public GrowattWorker(ILogger<GrowattWorker> logger, InverterMonitor monitor, IOptions<AppConfig> config)
+    public GrowattWorker(ILogger<GrowattWorker> logger, InverterMonitor monitor, IOptions<AppConfig> config, Utils utils)
     {
-        _logger = logger;
-        _monitor = monitor;
-        _config = config.Value;
+        this.logger = logger;
+        this.monitor = monitor;
+        this.utils = utils;
+        this.config = config.Value;
     }
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("GrowattMonitor started at: {time}", DateTimeOffset.Now);
+        logger.LogInformation("GrowattMonitor started at: {time}", DateTimeOffset.Now);
 
         await base.StartAsync(cancellationToken);
     }
@@ -30,13 +31,13 @@ public class GrowattWorker : BackgroundService
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Worker executing at: {time}", DateTimeOffset.Now);
+            logger.LogInformation("Worker executing at: {time}", DateTimeOffset.Now);
 
             Console.OutputEncoding = Encoding.Default;
 
             // Only run the monitor when there is actual daylight
-            if (Utils.IsDaylight(_config.Latitude, _config.Longitude))
-                await _monitor.Run();
+            if (utils.IsDaylight())
+                await monitor.Run();
 
             // Wait for 1 minute
             Console.WriteLine("Sleeping for 10 minutes...");

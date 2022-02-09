@@ -1,11 +1,21 @@
 ﻿using System.Text;
+using GrowattMonitor.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace GrowattMonitor.Helpers;
 
-public static class Utils
+public class Utils
 {
     private static DateTime riseTime = DateTime.MinValue;
     private static DateTime setTime = DateTime.MinValue;
+    private readonly ILogger<Utils> logger;
+    private readonly AppConfig config;
+
+    public Utils(ILogger<Utils> logger, IOptions<AppConfig> config)
+    {
+        this.logger = logger;
+        this.config = config.Value;
+    }
 
     public static string ByteArrayToString(byte[] ba)
     {
@@ -36,8 +46,12 @@ public static class Utils
         return array;
     }
 
-    public static bool IsDaylight(double latitude, double longitude, int offset)
+    public bool IsDaylight()
     {
+        double latitude = config.Latitude;
+        double longitude = config.Longitude;
+        int offset = config.Offset;
+
         DateTime currentTime = DateTime.Now;
 
         // riseTime and setTime already calculated and current time is in between => in daylight range
@@ -56,7 +70,8 @@ public static class Utils
             return false;
         }
 
-        Console.WriteLine($"Today is {DateTime.Now.Date:dd-MM-yyyy}, sunrise @ {riseTime:HH:mm:ss}, sunset @ {setTime:HH:mm:ss}");
+        logger.LogInformation("Today is {now:dd-MM-yyyy}, sunrise @ {rise:HH:mm:ss}, sunset @ {set:HH:mm:ss}, offset is {offset} minutes", DateTime.Now.Date, riseTime, setTime, offset);
+        
 
         // account for calculation discrepancies
         riseTime = riseTime.AddMinutes(offset);

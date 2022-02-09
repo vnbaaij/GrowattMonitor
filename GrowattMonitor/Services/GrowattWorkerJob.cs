@@ -8,35 +8,35 @@ namespace GrowattMonitor.Services;
 
 public class GrowattWorkerJob : CronJobService
 {
-    private readonly ILogger<GrowattWorkerJob> _logger;
-    private readonly InverterMonitor _monitor;
+    private readonly ILogger<GrowattWorkerJob> logger;
+    private readonly InverterMonitor monitor;
 
     public GrowattWorkerJob(IScheduleConfig<GrowattWorkerJob> schedule, ILogger<GrowattWorkerJob> logger, InverterMonitor monitor)
         : base (schedule.CronExpression, schedule.TimeZoneInfo)
     {
-        _logger = logger;
-        _monitor = monitor;
+        this.logger = logger;
+        this.monitor = monitor;
     }
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Growatt Worker Job starting...");
+        logger.LogInformation("Growatt Worker Job starting...");
         return base.StartAsync(cancellationToken);
     }
 
 
     public override Task DoWork(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Growatt Worker Job calling monitor at: {time:hh:mm:ss}", DateTime.Now);
+        logger.LogInformation("Growatt Worker Job calling monitor at: {time:hh:mm:ss}", DateTime.Now);
         
-        _monitor.Run().Wait(cancellationToken);
+        monitor.Run().Wait(cancellationToken);
         
         return Task.CompletedTask;
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Growatt Worker Job stopping...");
+        logger.LogInformation("Growatt Worker Job stopping...");
         return base.StopAsync(cancellationToken);
     }
 }

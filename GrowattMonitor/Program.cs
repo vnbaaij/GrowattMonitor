@@ -33,6 +33,8 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddOptions();
 
         services.Configure<AppConfig>(hostContext.Configuration.GetSection("Configuration"));
+        services.AddSingleton<Utils>();
+        services.AddSingleton<StorageHelper>();
         services.AddSingleton<InverterMonitor>();
         //services.AddSingleton<InverterMonitorMock>();
 
