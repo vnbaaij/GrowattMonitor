@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="GrowattWorker.cs" />
     <Compile Remove="Helpers\SocketExtensions.cs" />
   </ItemGroup>
 
