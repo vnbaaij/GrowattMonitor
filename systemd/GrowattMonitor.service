@@ -1,7 +1,7 @@
 # GrowattMonitor.service
 [Unit]
 Description=Growatt Inverter Monitor
-Conflicts=GrowattMonitor.timer
+#Conflicts=GrowattMonitor.timer
 
 [Service]
 Type=notify

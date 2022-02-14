@@ -17,13 +17,24 @@ IHost host = Host.CreateDefaultBuilder(args)
         using X509Store store = new(StoreLocation.CurrentUser);
         store.Open(OpenFlags.ReadOnly);
 
+        var x509Certificate = store.Certificates
+        .Find(
+            X509FindType.FindByThumbprint,
+            builtConfig["AzureADCertThumbprint"],
+            validOnly: false)
+        .OfType<X509Certificate2>()
+        .Single();
+
         X509Certificate2Collection certs = store.Certificates
         .Find(X509FindType.FindByThumbprint,
             builtConfig["AzureADCertThumbprint"], false);
 
         config.AddAzureKeyVault(new Uri($"https://{builtConfig["KEYVAULTNAME"]}.vault.azure.net/"),
-                                new ClientCertificateCredential(builtConfig["AZUREADDIRECTORYID"], builtConfig["AZUREADAPPLICATIONID"], certs.OfType<X509Certificate2>().Single()),
-                                new KeyVaultSecretManager());
+                                new ClientCertificateCredential(
+                                    builtConfig["AZUREADDIRECTORYID"], 
+                                    builtConfig["AZUREADAPPLICATIONID"], 
+                                    x509Certificate)
+                                );
 
 
         store.Close();

@@ -16,12 +16,12 @@
                 "pipeCwd": "${workspaceFolder}",
                 "pipeProgram": "ssh",
                 "pipeArgs": [
-                    "pi@raspberrypi4"
+                    "pi@192.168.1.98"
                 ],
-                "debuggerPath": "~/vsdbg/vsdbg"
+                "debuggerPath": "~/.vsdbg/vsdbg"
             },
             "env": {
-                "DOTNET_ENVIRONMENT" : "Development"
+                "DOTNET_ENVIRONMENT" : "Production"
             }
 
         },
@@ -39,9 +39,9 @@
                 "pipeCwd": "${workspaceFolder}",
                 "pipeProgram": "ssh",
                 "pipeArgs": [
-                    "pi@raspberrypi4"
+                    "pi@192.168.1.98"
                 ],
-                "debuggerPath": "~/vsdbg/vsdbg"
+                "debuggerPath": "~/.vsdbg/vsdbg"
             },
             "env": {
                 "DOTNET_ENVIRONMENT" : "Development"
