@@ -1,0 +1,5 @@
+cd /etc/systemd/system
+
+sudo systemctl start GrowattMonitor.service
+sudo journalctl -fxe -u GrowattMonitor.service
+sudo journalctl -fxe -u MeterMonitor.service 
